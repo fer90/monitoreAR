@@ -1,0 +1,102 @@
+Milestone 1 inspection — Starship Flight 11, GOES-19 ABI band 7
+
+Liftoff reference: 2025-10-13T23:23:45+00:00  (quoted; not read from the satellite)
+Pad: 25.9962 N, -97.1544 W
+Geolocation self-test round-trip at the pad: 0.00 m
+
+Instrument file (first frame that contains the pad)
+  file: OR_ABI-L1b-RadM2-M6C07_G19_s20252862318549_e20252862319018_c20252862319061.nc
+  platform_ID: G19
+  instrument_type: GOES-R Series Advanced Baseline Imager (ABI)
+  spatial_resolution: 2km at nadir
+  scene_id: Mesoscale
+  timeline_id: ABI Mode 6
+  dataset_name: OR_ABI-L1b-RadM2-M6C07_G19_s20252862318549_e20252862319018_c20252862319061.nc
+  title: ABI L1b Radiances
+  time_coverage_start: 2025-10-13T23:18:54.9Z
+  time_coverage_end: 2025-10-13T23:19:01.8Z
+  date_created: 2025-10-13T23:19:06.1Z
+  orbital_slot: GOES-East
+  production_site: WCDAS
+  band_id: 7
+  band_wavelength_um: 3.890000104904175
+  radiance units: mW m-2 sr-1 (cm-1)-1
+  radiance standard_name: toa_outgoing_radiance_per_unit_wavenumber
+  planck fk1, fk2, bc1, bc2: (200248.0, 3685.8701171875, 0.4898500144481659, 0.9993100166320801)
+  esun (W m-2 um-1): nan
+  kappa0: nan
+  esun and kappa0 are the reflectance conversion. NaN means this emissive-band file does not carry them.
+  BT at the top of the scaled radiance range: 410.9220468980713
+  array shape (y, x): (500, 500)
+  x units: rad
+  fixed-grid lon0 (deg): -75.0
+  actual subsatellite lat, lon: 0.0, -75.19999694824219
+  nominal_satellite_height: 35786.0234375 km
+  yaw_flip_flag: 0.0
+  perspective_point_height (m): 35786023.0
+  sweep_angle_axis: x
+  DQF flag_values: [0, 1, 2, 3, 4]
+  DQF flag_meanings: good_pixel_qf conditionally_usable_pixel_qf out_of_range_pixel_qf no_value_pixel_qf focal_plane_temperature_threshold_exceeded_qf
+
+At the pad, from the fixed grid
+  nearest pixel center: 25.9870 N, -97.1614 W
+  pad-to-pixel-center distance: 1.238 km
+  scan-angle conversion vs file geospatial center: 0.182 m
+  neighbouring-pixel spacing: 2.31 km (east-west), 2.47 km (north-south)
+  satellite zenith angle (approx): 39.0 deg
+  parallax: about 8.1 km of apparent shift per 10 km of source altitude
+  that shift is away from the subsatellite point, bearing 322 deg from north
+  solar zenith angle at liftoff (NOAA approximation): 82.1 deg
+  band 7 BT includes reflected solar radiance while the solar zenith is below ~90 deg
+
+Sectors in the 23:18–23:36 UTC window
+  files listed: 36
+  files whose fixed grid contains the pad: 18
+  files that do not contain the pad: 18 (sectors M1)
+    M1 example center 14.42 N, -40.98 E; bounds lat 9.49 to 19.70, lon -47.60 to -32.50 (OR_ABI-L1b-RadM1-M6C07_G19_s20252862318249_e20252862318318_c20252862318353.nc)
+  scan duration (end-start): min 6.9 s, max 7.1 s
+  gap between successive scans that see the pad: min 60.0 s, median 60.0 s, max 60.0 s
+  filename creation minus scan end: min 3.4 s, median 3.8 s, max 4.6 s
+  The creation stamp is ground-system product time, not the moment the object appeared on AWS.
+  CONUS band-7 files in this window (listed, not opened): 3
+    23:21:17, 23:26:17, 23:31:17
+  Full Disk band-7 files in this window (listed, not opened): 2
+    23:20:20, 23:30:20
+
+Per-frame brightness temperature for frames that contain the pad
+  start_utc             sector  rel_s  pad_K  max20_K  dist_km  median_K  p98_K  saturated_in_file  dqf_counts
+  2025-10-13 23:18:54.9  M2   -290.1  299.23   300.14   15.94   298.29  300.06      0  {0: 7848}
+  2025-10-13 23:19:54.9  M2   -230.1  299.31   300.26   15.94   298.29  300.01      0  {0: 7848}
+  2025-10-13 23:20:54.9  M2   -170.1  299.31   300.18   15.94   298.29  299.93      0  {0: 7848}
+  2025-10-13 23:21:54.9  M2   -110.1  299.31   300.06   15.94   298.24  299.89      0  {0: 7848}
+  2025-10-13 23:22:54.9  M2    -50.1  299.27   300.01   15.94   298.20  299.81      0  {0: 7848}
+  2025-10-13 23:23:54.9  M2      9.9  339.43   339.43    1.24   298.20  299.77      0  {0: 7848}
+  2025-10-13 23:24:54.9  M2     69.9  299.69   345.55   10.09   298.15  299.73      0  {0: 7848}
+  2025-10-13 23:25:54.9  M2    129.9  299.44   299.81   15.52   298.15  299.64      0  {0: 7848}
+  2025-10-13 23:26:54.9  M2    189.9  299.23   299.77   15.94   298.11  299.56      0  {0: 7848}
+  2025-10-13 23:27:54.9  M2    249.9  299.06   300.34   13.72   298.07  299.52      0  {0: 7848}
+  2025-10-13 23:28:54.9  M2    309.9  299.01   300.54   13.72   298.02  299.44      0  {0: 7848}
+  2025-10-13 23:29:54.9  M2    369.9  298.93   300.94   15.22   298.02  299.39      0  {0: 7848}
+  2025-10-13 23:30:54.9  M2    429.9  298.97   300.90   15.22   297.94  299.31      0  {0: 7848}
+  2025-10-13 23:31:54.9  M2    489.9  299.06   300.18   15.22   297.94  299.27      0  {0: 7848}
+  2025-10-13 23:32:54.9  M2    549.9  298.93   300.06   16.91   297.89  299.23      0  {0: 7848}
+  2025-10-13 23:33:54.9  M2    609.9  298.97   300.54   16.91   297.85  299.18      0  {0: 7848}
+  2025-10-13 23:34:54.9  M2    669.9  298.84   301.30   16.91   297.80  299.14      0  {0: 7848}
+  2025-10-13 23:35:54.9  M2    729.9  298.80   300.82   16.91   297.76  299.10      0  {0: 7848}
+
+Frames whose crop maximum exceeds 305 K
+  2025-10-13 23:23:54.9  +10 s  339.4 K at 1.2 km from the pad (25.987 N, -97.161 W)
+  2025-10-13 23:24:54.9  +70 s  345.5 K at 10.1 km from the pad (26.075 N, -97.205 W)
+  2025-10-13 23:25:54.9  +130 s  308.3 K at 25.4 km from the pad (26.224 N, -97.126 W)
+  2025-10-13 23:26:54.9  +190 s  307.5 K at 57.8 km from the pad (26.409 N, -96.802 W)
+  Background in this crop sits near 298–300 K. After these scans the crop maximum stays near that background.
+
+Figure frames
+  before: OR_ABI-L1b-RadM2-M6C07_G19_s20252862322549_e20252862323018_c20252862323060.nc
+  pad_pixel_heats: OR_ABI-L1b-RadM2-M6C07_G19_s20252862323549_e20252862324019_c20252862324058.nc
+  hot_pixel_moved: OR_ABI-L1b-RadM2-M6C07_G19_s20252862324549_e20252862325018_c20252862325056.nc
+  color scale: 283.43 K to 350 K
+  wrote outputs/m1_starship_flight11_band7.png
+
+Saturation: near-pad maximum 345.5 K stayed below the scaled ceiling (410.9220468980713).
+The reported temperature is the pixel average, not the flame temperature.
