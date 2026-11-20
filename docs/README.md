@@ -1,6 +1,6 @@
-# How Milestone 1 calculates its numbers
+# How the case study calculates its numbers
 
-These notes walk through `scripts/m1_starship_flight11.py` and the measurements in [`outputs/m1_inspection.txt`](../outputs/m1_inspection.txt). They cover the Starship Flight 11 case study only. The detector, the control day, and the public API are later milestones and are described in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
+These notes walk through the Starship Flight 11 case study. The first five cover `scripts/m1_starship_flight11.py` and [`outputs/m1_inspection.txt`](../outputs/m1_inspection.txt). The sixth covers `scripts/m2_signal.py` and [`outputs/m2_signal.txt`](../outputs/m2_signal.txt). The detector and the public API are later milestones and are described in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 
 The launch used as the example is Starship Flight 11, Starbase Pad 1, 13 October 2025, 23:23:45 UTC. The imagery is NOAA GOES-19 ABI Level 1b band 7.
 
@@ -11,9 +11,11 @@ Read them in this order:
 3. [Fixed-grid geometry](fixed-grid-geometry.md) — scan angles to latitude and longitude, and the checks on that conversion.
 4. [Pixel size, zenith, parallax, and the Sun](viewing-geometry.md) — the 2.3 km pixel, the 39° view, the 8 km parallax scale, and the solar zenith at liftoff.
 5. [How the figure and the report are chosen](figure-and-report.md) — the three panels, the colour scale, the white cross, and the two maxima.
+6. [How the signal is compared](signal-comparison.md) — the quiet evening, the fire, the 45 K jump, and why none of that is a threshold yet.
 
-Every temperature and distance quoted here is printed by that script. Re-run it from the repository root to regenerate the report:
+Every temperature and distance quoted here is printed by those scripts. Re-run them from the repository root to regenerate the reports:
 
 ```bash
 .venv/bin/python scripts/m1_starship_flight11.py
+.venv/bin/python scripts/m2_signal.py
 ```

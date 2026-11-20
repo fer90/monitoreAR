@@ -1,12 +1,12 @@
 # Architecture
 
-This document records how monitoreAR is built now, and the decisions that v0.1 will keep. Decisions marked **made** are already in the Milestone 1 code or are fixed by that run. Decisions marked **v0.1** are the intended design and are not implemented yet. Items marked **open** still need a choice before the milestone that depends on them.
+This document records how monitoreAR is built now, and the decisions that v0.1 will keep. Decisions marked **made** are already in the Milestone 1 or Milestone 2 code, or are fixed by those runs. Decisions marked **v0.1** are the intended design and are not implemented yet. Items marked **open** still need a choice before the milestone that depends on them.
 
 The goal is a small, readable pipeline: fetch one band, convert it in the open, score a few fixed sites, store the raw numbers, and show them. The physics and the scan pattern set the shape of that pipeline more than the web page does.
 
 ## Current system
 
-Milestone 1 is one script, `scripts/m1_starship_flight11.py`. It does not detect launches.
+Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Neither script detects launches.
 
 ```
 noaa-goes19  ABI-L1b-RadM/.../C07
@@ -111,7 +111,11 @@ The Flight 11 crop was entirely flag 0. The detector will still read `flag_meani
 
 **v0.1**, forced by the case study. Before liftoff the pad pixel was 299 K and the 98th percentile of the crop was about 300 K. The launch pixel reached 339 K and then 346 K. A threshold on absolute temperature, chosen anywhere near the background, either fires on ordinary warm land or sits so high that it clips the real pulse. The useful feature is the jump from the preceding scans of the same place.
 
-The same run also shows the limit of that idea. At +130 s and +190 s the crop maximum was 308 K and 307 K, tens of kilometres from the pad, a few kelvin above the pre-launch crop maximum. Those pixels are easy to confuse with ordinary warm spots. Milestone 2 has to measure that tail against a non-launch day at a similar solar time, and against a known fire, before any threshold is chosen.
+Milestone 2 measured that tail. The table is [`outputs/m2_signal.txt`](outputs/m2_signal.txt) and the walkthrough is [`docs/signal-comparison.md`](docs/signal-comparison.md). Inside 20 km the only jumps above 2 K are the two launch scans: 39.29 K at +9.9 s (the pad pixel, 339.43 K) and 45.41 K at +69.9 s (345.55 K, 10.1 km from the pad), against a pre-liftoff median of 300.14 K. On 25 October, the nearest evening when a mesoscale sector contained the pad at the same clock time, that 20 km maximum has a standard deviation of 0.20 K. The two evenings differ by 1.74 K in the median, which is larger than the within-evening scatter, so an absolute temperature still does not travel from one clear evening to the next.
+
+Farther out, the same window still sees 308.26 K at +130 s (25.4 km) and 307.54 K at +190 s (57.8 km). Those are about 8 K above the 20 km baseline, about 40 quiet-evening standard deviations, and they sit outside the neighbourhood that holds the launch. The 98th percentile within 20 km only reaches 305.02 K on the hot scans.
+
+A CONUS fire pixel in Washington County, Georgia, the same evening stayed about 43 K above its 10–30 km ring for every scan from 21:01 to 23:56 UTC. Its peak band-7 brightness temperature was 339.91 K. The amplitude matches the launch. The duration does not: two mesoscale scans, against at least 175 minutes. Milestone 3 still freezes the threshold, the radius, and the fire product. The 20 km window, the 10–30 km ring, and the 10 K duration count are measurements of this case.
 
 Day and night cannot share one absolute cutoff. Solar zenith at the Flight 11 liftoff was about 82°. Band 7 still sees reflected sunlight. A night launch will have a colder, cleaner background. The score stores the local solar zenith angle next to the brightness temperatures so a later threshold can use it. v0.1 does not build a separate reflectance product.
 
@@ -122,7 +126,7 @@ Day and night cannot share one absolute cutoff. Solar zenith at the Flight 11 li
 - the same pixel stays anomalous for several consecutive scans, or
 - the official GOES fire product flags that pixel.
 
-The fire product is a filter, not the detector. If the fire file is missing, the candidate is stored and marked `fire_product=unavailable` rather than silently passed or dropped. Which fire product (the mesoscale FDCF file when it exists, otherwise the CONUS product) is **open** until Milestone 3 looks at a real fire case.
+The fire product is a filter, not the detector. If the fire file is missing, the candidate is stored and marked `fire_product=unavailable` rather than silently passed or dropped. Milestone 2 measured one real case in the CONUS product `ABI-L2-FDCC`, mask 30, on the scan starting 23:21:17 UTC. Which product the filter consults when a mesoscale sector covers the site is **open** until Milestone 3.
 
 ### Fixed watch list
 
@@ -207,7 +211,7 @@ FastAPI reads rows    Leaflet reads the JSON
 
 ## Open points
 
-- The numeric threshold, the background window, and the neighbourhood radius. Milestone 2 measures them on the launch, on a quiet day at the same solar time, and on a fire. Milestone 3 freezes a conservative rule. The Flight 11 numbers (about +40 K for two scans, then a weak tail) are the scale, not the threshold.
+- The numeric threshold, the background window, and the neighbourhood radius. Milestone 2 measured them and did not freeze them. On Flight 11 the 20 km maximum jumped 45.41 K and, one scan earlier, 39.29 K, against a quiet-evening standard deviation of 0.20 K and a day-to-day offset of 1.74 K. A fire the same evening held a ~43 K anomaly for at least 175 minutes. The 20 km neighbourhood, the 10–30 km ring, and the 10 K duration count are the windows used to see that. Milestone 3 freezes the rule. Details are in [`docs/signal-comparison.md`](docs/signal-comparison.md).
 - Which published fire product is available at mesoscale cadence for these sites.
 - The second and third watch areas, after the same geolocation and pixel-size check used for Pad 1.
 - The license file, and the real Cafecito URL.

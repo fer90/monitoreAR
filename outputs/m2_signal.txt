@@ -1,0 +1,188 @@
+Milestone 2 — signal comparison, Starship Flight 11, GOES-19 ABI band 7
+
+What is being compared
+  Launch: mesoscale band 7 at Pad 1, 13 Oct 2025, 23:18–23:36 UTC.
+  Quiet day: mesoscale band 7 at the same pad and clock time on 25 Oct 2025.
+  Fire: CONUS band 7 at the strongest mask-30 pixel in the CONUS fire
+  product for the scan starting 23:21:17 UTC on 13 Oct 2025.
+  Brightness temperature uses planck_fk1, planck_fk2, planck_bc1, planck_bc2
+  from each file. Reflected sunlight stays in the number.
+
+Statistics
+  near_K     brightness temperature of the pixel nearest the point
+  p98_K      98th percentile of finite pixels within 20 km
+  max20_K    hottest finite pixel whose centre is within 20 km
+  dmax_K     max20_K minus max20_K of the previous scan that saw the point
+  ring_K     median brightness temperature of pixels 10–30 km from the point
+  jump       max20_K minus the median max20_K of scans that ended by 23:23:45
+  The 20 km test uses a sphere of radius 6371.0088 km, as in Milestone 1.
+  No detection threshold is chosen here.
+
+Launch day
+  files in the window: 36, containing the pad: 18, elsewhere: 18
+  solar zenith at liftoff: 82.1 deg
+  satellite zenith at the pad: 39.0 deg
+  pixel spacing at the pad: 2.31 km east-west, 2.47 km north-south
+  pre-liftoff scans: 5, median max-within-20 km 300.14 K, sample std 0.10 K
+  pre-liftoff pad pixel median 299.31 K, sample std 0.04 K
+  peak jump: 45.41 K at 2025-10-13 23:24:54.9, max within 20 km 345.55 K, 10.09 km from the pad (26.075 N, 97.205 W)
+  scaled brightness-temperature ceiling: 410.92 K
+  wavelength: 3.890 µm
+  gap between pad-seeing scans: min 60.0 s, median 60.0 s, max 60.0 s
+
+  start_utc                  sector   rel_s   near_K   p98_K  max20_K   dmax_K   ring_K  dist20
+  2025-10-13 23:18:54.9  M2      -290.1   299.23  299.95   300.14        -   298.63   15.94
+  2025-10-13 23:19:54.9  M2      -230.1   299.31  299.89   300.26     0.12   298.63   15.94
+  2025-10-13 23:20:54.9  M2      -170.1   299.31  299.83   300.18    -0.08   298.63   15.94
+  2025-10-13 23:21:54.9  M2      -110.1   299.31  299.83   300.06    -0.12   298.63   15.94
+  2025-10-13 23:22:54.9  M2       -50.1   299.27  299.81   300.01    -0.04   298.59   15.94
+  2025-10-13 23:23:54.9  M2         9.9   339.43  305.02   339.43    39.42   298.59    1.24
+  2025-10-13 23:24:54.9  M2        69.9   299.69  304.92   345.55     6.12   298.59   10.09
+  2025-10-13 23:25:54.9  M2       129.9   299.44  299.73   299.81   -45.74   298.59   15.52
+  2025-10-13 23:26:54.9  M2       189.9   299.23  299.62   299.77    -0.04   298.55   15.94
+  2025-10-13 23:27:54.9  M2       249.9   299.06  299.58   300.34     0.57   298.55   13.72
+  2025-10-13 23:28:54.9  M2       309.9   299.01  299.64   300.54     0.20   298.55   13.72
+  2025-10-13 23:29:54.9  M2       369.9   298.93  299.64   300.94     0.40   298.55   15.22
+  2025-10-13 23:30:54.9  M2       429.9   298.97  299.52   300.90    -0.04   298.50   15.22
+  2025-10-13 23:31:54.9  M2       489.9   299.06  299.39   300.18    -0.72   298.50   15.22
+  2025-10-13 23:32:54.9  M2       549.9   298.93  299.39   300.06    -0.12   298.50   16.91
+  2025-10-13 23:33:54.9  M2       609.9   298.97  299.33   300.54     0.49   298.46   16.91
+  2025-10-13 23:34:54.9  M2       669.9   298.84  299.48   301.30     0.75   298.46   16.91
+  2025-10-13 23:35:54.9  M2       729.9   298.80  299.52   300.82    -0.47   298.46   16.91
+
+  Jumps of the 20 km maximum above the pre-liftoff median, largest first
+     45.41 K at   +69.9 s  (345.55 K, 10.1 km from the pad)
+     39.29 K at    +9.9 s  (339.43 K, 1.2 km from the pad)
+  On those two scans the 98th percentile within 20 km reaches 305.02 K. On the last pre-liftoff scan it is 299.81 K.
+  One hot pixel moves the maximum by tens of kelvin and the 98th percentile by about 5 K.
+  Hottest pixel farther than 20 km, inside the ±30-pixel window:
+    308.26 K at  +129.9 s, 25.4 km from the pad (8.12 K above the 20 km baseline, 41 quiet-day stds)
+    307.54 K at  +189.9 s, 57.8 km from the pad (7.40 K above the 20 km baseline, 38 quiet-day stds)
+
+Quiet day — 25 Oct 2025, same clock window
+  Adjacent evenings were checked from 27 Sep through 28 Oct, one band-7
+  file per sector nearest 23:22 UTC. Neither sector contained the pad on
+  12 Oct or 14 Oct. 25 Oct sector M1 did. Solar zenith at the pad at
+  23:23:45 UTC was 84.6 deg, against 82.1 deg on launch evening.
+  files in the window: 36, containing the pad: 18, elsewhere: 18
+  neighbourhood max: median 298.39 K, std 0.20 K, min 298.20 K, max 298.84 K
+  pad pixel: median 297.94 K, std 0.12 K, min 297.80 K, max 298.15 K
+  scan-to-scan change of the neighbourhood max: largest rise 0.09 K, largest fall -0.22 K, std 0.08 K
+  gap between pad-seeing scans: min 57.1 s, median 60.0 s, max 62.9 s
+  applying the launch-day rule (median of scans ended by 23:23:45) gives a baseline of 298.63 K and a peak jump of 0.21 K
+
+  start_utc                  sector   rel_s   near_K   p98_K  max20_K   dmax_K   ring_K  dist20
+  2025-10-25 23:18:26.0  M1      -319.0   298.15  298.61   298.84        -   297.63   18.15
+  2025-10-25 23:19:26.0  M1      -259.0   298.15  298.52   298.80    -0.04   297.63   17.85
+  2025-10-25 23:20:28.9  M1      -196.1   298.15  298.37   298.67    -0.13   297.67   17.85
+  2025-10-25 23:21:26.0  M1      -139.0   298.11  298.29   298.59    -0.09   297.71   17.85
+  2025-10-25 23:22:26.0  M1       -79.0   298.07  298.28   298.46    -0.13   297.71   18.15
+  2025-10-25 23:23:26.0  M1       -19.0   297.85  298.33   298.42    -0.04   297.80   18.15
+  2025-10-25 23:24:26.0  M1        41.0   297.94  298.26   298.50     0.09   297.80   17.85
+  2025-10-25 23:25:26.0  M1       101.0   297.94  298.20   298.42    -0.09   297.80   17.85
+  2025-10-25 23:26:26.0  M1       161.0   297.89  298.22   298.50     0.09   297.76   17.85
+  2025-10-25 23:27:26.0  M1       221.0   297.94  298.22   298.29    -0.22   297.76   13.49
+  2025-10-25 23:28:26.0  M1       281.0   297.85  298.24   298.29     0.00   297.76   13.49
+  2025-10-25 23:29:26.0  M1       341.0   297.94  298.24   298.37     0.09   297.76   18.15
+  2025-10-25 23:30:28.9  M1       403.9   297.94  298.15   298.29    -0.09   297.71   13.49
+  2025-10-25 23:31:26.0  M1       461.0   297.80  298.15   298.29     0.00   297.69   13.49
+  2025-10-25 23:32:26.0  M1       521.0   298.02  298.20   298.29     0.00   297.67   13.49
+  2025-10-25 23:33:26.0  M1       581.0   297.80  298.15   298.20    -0.09   297.65   15.89
+  2025-10-25 23:34:26.0  M1       641.0   297.85  298.15   298.24     0.04   297.67   13.49
+  2025-10-25 23:35:26.0  M1       701.0   297.85  298.15   298.20    -0.04   297.67   11.03
+
+Signal to noise, from the numbers above
+  launch peak jump: 45.41 K
+  quiet-day std of the neighbourhood max: 0.20 K over 18 scans
+  quiet-day largest scan-to-scan rise: 0.09 K
+  peak jump / quiet-day std: 231.1
+  peak jump / quiet-day largest rise: 523.3
+  pre-liftoff std on the launch day itself, same sector: 0.10 K over 5 scans
+  second-largest launch jump: 39.29 K at +10 s (199.9 quiet-day stds)
+  The quiet-evening median (298.39 K) sits 1.74 K below the launch-evening baseline (300.14 K). That day-to-day offset is larger than the 0.20 K within-evening std.
+  These ratios describe this one launch and this one quiet evening.
+  They are not a threshold.
+
+Fire
+  product file: OR_ABI-L2-FDCC-M6_G19_s20252862321170_e20252862323543_c20252862324125.nc
+  mask 30: temporally_filtered_good_fire_pixel
+  selected pixel: 32.810 N, 82.759 W, 1585 km from the pad
+  OpenStreetMap places 32.810 N, 82.759 W in Washington County, Georgia.
+  The label is a county, not a street: the band-7 pixel is about 2 km across.
+  product fire radiative power: 166.2 MW, product fire temperature: 716 K, product fire area: 18757 m^2
+  The product temperature is the algorithm's sub-pixel fire temperature.
+  The temperatures below are band-7 brightness temperature of the whole pixel.
+  Other mask-30 pixels in that scan, by radiative power:
+      166.2 MW  32.810 N, 82.759 W  1585 km from the pad  T_product 716 K
+       76.7 MW  32.810 N, 82.736 W  1587 km from the pad  T_product 860 K
+       74.8 MW  34.428 N, 91.801 W  1069 km from the pad  T_product 676 K
+       63.0 MW  34.372 N, 88.885 W  1223 km from the pad  T_product 674 K
+       56.9 MW  34.372 N, 88.861 W  1225 km from the pad  T_product 635 K
+  CONUS band-7 files listed in hours 21–23: 36, missing the point: 0
+  solar zenith at the fire pixel at 23:23:45 UTC: 95.6 deg
+  satellite zenith at the fire pixel: 38.9 deg
+  pixel spacing: 2.10 km east-west, 2.65 km north-south
+  gap between CONUS scans: min 300.0 s, median 300.0 s, max 300.0 s
+  nearest-pixel offset from the product coordinate: 0.00 km on the first scan
+  peak (neighbourhood max minus 10–30 km median): 49.20 K at 2025-10-13 23:01:17.0, nearest pixel 339.91 K, max within 20 km 339.91 K, ring 290.71 K
+  scans whose neighbourhood max exceeds the ring by more than 10 K: 36 of 36, spanning 175 min from first to last such scan
+  The 10 K level only counts how long the anomaly lasts. It is not a threshold.
+  median anomaly over the three hours: 42.83 K, minimum 24.37 K
+  largest scan-to-scan rise of the neighbourhood max: 7.31 K, largest fall: -7.41 K
+  scaled ceiling on these CONUS files: 410.92 K
+
+  start_utc                  sector   rel_s   near_K   p98_K  max20_K   dmax_K   ring_K  dist20
+  2025-10-13 21:01:17.0  CONUS  -8548.0   342.79  302.16   342.79        -   297.22    0.00
+  2025-10-13 21:06:17.0  CONUS  -8248.0   341.77  305.12   341.77    -1.02   297.04    0.00
+  2025-10-13 21:11:17.0  CONUS  -7948.0   337.34  303.43   337.34    -4.43   296.86    0.00
+  2025-10-13 21:16:17.0  CONUS  -7648.0   332.18  302.62   332.18    -5.17   296.63    0.00
+  2025-10-13 21:21:17.0  CONUS  -7348.0   331.09  301.87   331.09    -1.09   296.49    0.00
+  2025-10-13 21:26:17.0  CONUS  -7048.0   330.23  302.97   330.23    -0.86   296.26    0.00
+  2025-10-13 21:31:17.0  CONUS  -6748.0   322.81  302.67   322.81    -7.41   296.03    0.00
+  2025-10-13 21:36:17.0  CONUS  -6448.0   325.85  301.39   325.85     3.03   295.79    0.00
+  2025-10-13 21:41:17.0  CONUS  -6148.0   325.99  299.97   325.99     0.15   295.60    0.00
+  2025-10-13 21:46:17.0  CONUS  -5848.0   322.23  299.54   322.23    -3.76   295.36    0.00
+  2025-10-13 21:51:17.0  CONUS  -5548.0   319.49  300.89   319.49    -2.74   295.12    0.00
+  2025-10-13 21:56:17.0  CONUS  -5248.0   322.81  299.59   322.81     3.33   294.87    0.00
+  2025-10-13 22:01:17.0  CONUS  -4948.0   329.42  299.27   329.42     6.61   294.58    0.00
+  2025-10-13 22:06:17.0  CONUS  -4648.0   329.19  303.05   329.19    -0.23   294.28    0.00
+  2025-10-13 22:11:17.0  CONUS  -4348.0   335.17  302.44   335.17     5.98   293.98    0.00
+  2025-10-13 22:16:17.0  CONUS  -4048.0   333.40  304.25   333.40    -1.78   293.62    0.00
+  2025-10-13 22:21:17.0  CONUS  -3748.0   340.71  300.34   340.71     7.31   293.31    0.00
+  2025-10-13 22:26:17.0  CONUS  -3448.0   339.46  299.57   339.46    -1.25   292.95    0.00
+  2025-10-13 22:31:17.0  CONUS  -3148.0   339.34  300.57   339.34    -0.11   292.58    0.00
+  2025-10-13 22:36:17.0  CONUS  -2848.0   337.81  300.53   337.81    -1.54   292.20    0.00
+  2025-10-13 22:41:17.0  CONUS  -2548.0   336.08  301.84   336.08    -1.72   291.88    0.00
+  2025-10-13 22:46:17.0  CONUS  -2248.0   337.69  299.22   337.69     1.61   291.55    0.00
+  2025-10-13 22:51:17.0  CONUS  -1948.0   336.86  298.66   336.86    -0.83   291.27    0.00
+  2025-10-13 22:56:17.0  CONUS  -1648.0   338.61  296.99   338.61     1.75   290.99    0.00
+  2025-10-13 23:01:17.0  CONUS  -1348.0   339.91  298.27   339.91     1.29   290.71    0.00
+  2025-10-13 23:06:17.0  CONUS  -1048.0   338.13  298.93   338.13    -1.77   290.48    0.00
+  2025-10-13 23:11:17.0  CONUS   -748.0   338.20  297.90   338.20     0.07   290.31    0.00
+  2025-10-13 23:16:17.0  CONUS   -448.0   335.08  298.16   335.08    -3.12   290.08    0.00
+  2025-10-13 23:21:17.0  CONUS   -148.0   335.86  298.71   335.86     0.78   289.90    0.00
+  2025-10-13 23:26:17.0  CONUS    152.0   334.86  301.17   334.86    -1.00   289.78    0.00
+  2025-10-13 23:31:17.0  CONUS    452.0   336.49  298.66   336.49     1.63   289.61    0.00
+  2025-10-13 23:36:17.0  CONUS    752.0   331.54  300.33   331.54    -4.95   289.49    0.00
+  2025-10-13 23:41:17.0  CONUS   1052.0   331.54  300.57   331.54     0.00   289.37    0.00
+  2025-10-13 23:46:17.0  CONUS   1352.0   332.68  297.88   332.68     1.14   289.19    0.00
+  2025-10-13 23:51:17.0  CONUS   1652.0   327.66  299.66   327.66    -5.01   289.07    0.00
+  2025-10-13 23:56:17.0  CONUS   1952.0   328.69  297.51   328.69     1.03   288.95    0.00
+
+Limits visible in this comparison
+  The quiet mesoscale sample is 12 days after the launch, because the
+  sectors were tasked elsewhere on the adjacent evenings. The Sun was
+  2.5 deg closer to the horizon.
+  The fire is a 5-minute CONUS pixel. The launch is a 1-minute mesoscale
+  pixel. Satellite zenith is similar. The fire pixel is in darkness
+  (solar zenith 95.6 deg) while the pad is still in daylight
+  (solar zenith 82.1 deg), so the backgrounds are not the same
+  physical mixture. Band 7 at the pad still includes reflected sunlight.
+  A 346 K brightness temperature is the average of one pixel, not the
+  flame temperature. The fire product's own temperature is a different
+  quantity and is printed separately.
+  The 20 km neighbourhood follows a hot pixel that moves. It also
+  follows any other warm pixel inside that radius.
+
+Figure: outputs/m2_signal.png
+  Peak launch jump 45.4 K. Quiet-evening std 0.20 K (231× that std). Quiet-evening largest rise 0.09 K. NOAA GOES-19 ABI L1b. No threshold applied.
