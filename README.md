@@ -30,7 +30,7 @@ Milestone 1 is in the repository. It is a historical case study of Starship Flig
 
 On the mesoscale sector that actually contained the pad, the pad pixel sat near 299 K before liftoff, jumped to 339 K on the scan that started 10 seconds after liftoff, and was back near 300 K a minute later. The hottest pixel on that next scan was 346 K and about 10 km from the pad. The background stayed near 298–300 K. Two further scans were only a few kelvin warmer, farther downrange. Nothing in the sector hit the 411 K radiance ceiling. The full table is in [`outputs/m1_inspection.txt`](outputs/m1_inspection.txt).
 
-That one event already fixes several design choices. They are written up in [`ARCHITECTURE.md`](ARCHITECTURE.md).
+That one event already fixes several design choices. They are written up in [`ARCHITECTURE.md`](ARCHITECTURE.md). The equations behind the numbers — the file path, the Planck conversion, the fixed grid, the viewing angles, and how the figure is chosen — are written out in [`docs/`](docs/README.md).
 
 Milestones 2 through 6 are not built yet: a control-day and fire comparison, the detector, a near-real-time poller, the public API and map, and packaging.
 
@@ -63,6 +63,7 @@ Band 7 Level 1b files store radiance in mW m⁻² sr⁻¹ (cm⁻¹)⁻¹. Bright
 
 ```
 scripts/m1_starship_flight11.py   historical case study
+docs/                             equations and the Flight 11 walkthrough
 outputs/                          figure and inspection report
 requirements.txt                  libraries used by that script
 data/                             downloaded NetCDF, gitignored

@@ -24,7 +24,7 @@ noaa-goes19  ABI-L1b-RadM/.../C07
    crop around Pad 1, per-scan statistics, PNG + text report in outputs/
 ```
 
-Libraries are numpy, xarray, netCDF4, s3fs, and matplotlib. There is no package layout, no database, and no web server.
+Libraries are numpy, xarray, netCDF4, s3fs, and matplotlib. There is no package layout, no database, and no web server. The equations and the Flight 11 numbers are written out in [`docs/`](docs/README.md).
 
 The case study is Starship Flight 11, GOES-19, 13 October 2025, 23:18–23:36 UTC, ABI Mode 6, band 7 only. Pad 1 is 25.9962°N, 97.1544°W.
 
