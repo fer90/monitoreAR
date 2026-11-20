@@ -1,0 +1,167 @@
+Milestone 3 — score, Starbase Pad 1, GOES-19 ABI band 7
+
+Rule, frozen from the Milestone 2 measurements
+  Watch list: starbase-pad-1 at 25.9962 N, 97.1544 W. No other site is armed.
+  Product: mesoscale ABI-L1b-RadM band 7 only. A sector that misses the
+  pad is a coverage gap. CONUS and full disk are not scored for the watch.
+  Neighbourhood: hottest finite pixel within 20 km. DQF 2, 3, and 4 stay out.
+  DQF 1 may enter and is counted.
+  Baseline: median of that maximum on the previous covering scans, up to
+  5, and at least 3. The score does not use the liftoff time.
+  Threshold: 20 K. Milestone 2's quiet evening, measured against
+  a fixed pre-liftoff median, peaked at 0.21 K. The two Flight 11 scans
+  inside 20 km were about 39 K and 45 K. The 8 K pixels farther downrange
+  were outside 20 km.
+  Persistence: the 3rd consecutive covering scan at or above the
+  threshold is held back. A gap longer than 90 s starts a new run.
+  Fire product: ABI-L2-FDCM for the same sector and the same scan start.
+  Codes 30–35 within 20 km of the hot pixel hold the candidate back.
+  Codes 10–15 are written in the log and do not hold it back: the second
+  Flight 11 scan is itself code 10. A missing fire file stays in the log
+  as fire_file=unavailable.
+  The 98th percentile is logged and is not the score. On the hot scans it
+  rose by about 5 K, which is under this threshold.
+
+Launch evening — 13 Oct 2025, 23:18–23:36 UTC
+  files listed: 36, containing the pad: 18, elsewhere: 18
+
+  start_utc                  sector   score_K  base_K  n   max_K   near_K  dist_km  run  status
+  2025-10-13 23:18:54.9  M2           -        -  0   300.14   299.23   15.94    0  unscored
+  2025-10-13 23:19:54.9  M2           -        -  1   300.26   299.31   15.94    0  unscored
+  2025-10-13 23:20:54.9  M2           -        -  2   300.18   299.31   15.94    0  unscored
+  2025-10-13 23:21:54.9  M2       -0.12   300.18  3   300.06   299.31   15.94    0  below
+  2025-10-13 23:22:54.9  M2       -0.14   300.16  4   300.01   299.27   15.94    0  below
+  2025-10-13 23:23:54.9  M2       39.29   300.14  5   339.43   339.43    1.24    1  emit
+  2025-10-13 23:24:54.9  M2       45.37   300.18  5   345.55   299.69   10.09    2  emit
+  2025-10-13 23:25:54.9  M2       -0.37   300.18  5   299.81   299.44   15.52    0  below
+  2025-10-13 23:26:54.9  M2       -0.29   300.06  5   299.77   299.23   15.94    0  below
+  2025-10-13 23:27:54.9  M2        0.33   300.01  5   300.34   299.06   13.72    0  below
+  2025-10-13 23:28:54.9  M2        0.20   300.34  5   300.54   299.01   13.72    0  below
+  2025-10-13 23:29:54.9  M2        0.60   300.34  5   300.94   298.93   15.22    0  below
+  2025-10-13 23:30:54.9  M2        0.56   300.34  5   300.90   298.97   15.22    0  below
+  2025-10-13 23:31:54.9  M2       -0.36   300.54  5   300.18   299.06   15.22    0  below
+  2025-10-13 23:32:54.9  M2       -0.49   300.54  5   300.06   298.93   16.91    0  below
+  2025-10-13 23:33:54.9  M2        0.00   300.54  5   300.54   298.97   16.91    0  below
+  2025-10-13 23:34:54.9  M2        0.75   300.54  5   301.30   298.84   16.91    0  below
+  2025-10-13 23:35:54.9  M2        0.28   300.54  5   300.82   298.80   16.91    0  below
+
+Candidates on the launch evening
+  starbase-pad-1  emit
+    scan 2025-10-13 23:23:54.9 to 2025-10-13 23:24:01.9  sector M2
+    source: noaa-goes19/ABI-L1b-RadM/2025/286/23/OR_ABI-L1b-RadM2-M6C07_G19_s20252862323549_e20252862324019_c20252862324058.nc
+    hot pixel: 25.987 N, 97.161 W, 1.24 km from the watch point
+    score: 39.29 K = 339.43 K minus baseline 300.14 K over 5 scans [300.14, 300.26, 300.18, 300.06, 300.01]
+    pixel nearest the watch point: 339.43 K, DQF 0
+    98th percentile within 20 km: 305.02 K
+    median 10–30 km away: 298.59 K
+    solar zenith at the hot pixel: 82.1 deg
+    DQF counts within 20 km: {0: 227}
+    hot-pixel DQF: 0, conditional pixels: 0, saturated: False
+    consecutive scans at or above 20 K: 1
+    fire file: OR_ABI-L2-FDCM2-M6_G19_s20252862323549_e20252862324006_c20252862324127.nc
+    fire mask nearest the hot pixel: 150 invalid_ecosystem_UMD_land_cover_type_sea_water_or_MODIS_land_mask_types_or_framework_desert_mask_type_bright_desert
+    fire codes 10–15 and 30–35 within 20 km of the hot pixel: none
+
+  starbase-pad-1  emit
+    scan 2025-10-13 23:24:54.9 to 2025-10-13 23:25:01.8  sector M2
+    source: noaa-goes19/ABI-L1b-RadM/2025/286/23/OR_ABI-L1b-RadM2-M6C07_G19_s20252862324549_e20252862325018_c20252862325056.nc
+    hot pixel: 26.075 N, 97.205 W, 10.09 km from the watch point
+    score: 45.37 K = 345.55 K minus baseline 300.18 K over 5 scans [300.26, 300.18, 300.06, 300.01, 339.43]
+    pixel nearest the watch point: 299.69 K, DQF 0
+    98th percentile within 20 km: 304.92 K
+    median 10–30 km away: 298.59 K
+    solar zenith at the hot pixel: 82.3 deg
+    DQF counts within 20 km: {0: 227}
+    hot-pixel DQF: 0, conditional pixels: 0, saturated: False
+    consecutive scans at or above 20 K: 2
+    fire file: OR_ABI-L2-FDCM2-M6_G19_s20252862324549_e20252862325006_c20252862325117.nc
+    fire mask nearest the hot pixel: 150 invalid_ecosystem_UMD_land_cover_type_sea_water_or_MODIS_land_mask_types_or_framework_desert_mask_type_bright_desert
+    fire code 10 good_fire_pixel at 3.39 km from the hot pixel, FRP 17.7 MW
+
+Quiet evening — 25 Oct 2025, same clock window, same rule
+  files listed: 36, containing the pad: 18, elsewhere: 18
+  largest score: 0.04 K at 2025-10-25 23:26:26.0
+
+  start_utc                  sector   score_K  base_K  n   max_K   near_K  dist_km  run  status
+  2025-10-25 23:18:26.0  M1           -        -  0   298.84   298.15   18.15    0  unscored
+  2025-10-25 23:19:26.0  M1           -        -  1   298.80   298.15   17.85    0  unscored
+  2025-10-25 23:20:28.9  M1           -        -  2   298.67   298.15   17.85    0  unscored
+  2025-10-25 23:21:26.0  M1       -0.21   298.80  3   298.59   298.11   17.85    0  below
+  2025-10-25 23:22:26.0  M1       -0.28   298.74  4   298.46   298.07   18.15    0  below
+  2025-10-25 23:23:26.0  M1       -0.26   298.67  5   298.42   297.85   18.15    0  below
+  2025-10-25 23:24:26.0  M1       -0.09   298.59  5   298.50   297.94   17.85    0  below
+  2025-10-25 23:25:26.0  M1       -0.09   298.50  5   298.42   297.94   17.85    0  below
+  2025-10-25 23:26:26.0  M1        0.04   298.46  5   298.50   297.89   17.85    0  below
+  2025-10-25 23:27:26.0  M1       -0.17   298.46  5   298.29   297.94   13.49    0  below
+  2025-10-25 23:28:26.0  M1       -0.13   298.42  5   298.29   297.85   13.49    0  below
+  2025-10-25 23:29:26.0  M1       -0.04   298.42  5   298.37   297.94   18.15    0  below
+  2025-10-25 23:30:28.9  M1       -0.09   298.37  5   298.29   297.94   13.49    0  below
+  2025-10-25 23:31:26.0  M1        0.00   298.29  5   298.29   297.80   13.49    0  below
+  2025-10-25 23:32:26.0  M1        0.00   298.29  5   298.29   298.02   13.49    0  below
+  2025-10-25 23:33:26.0  M1       -0.09   298.29  5   298.20   297.80   15.89    0  below
+  2025-10-25 23:34:26.0  M1       -0.04   298.29  5   298.24   297.85   13.49    0  below
+  2025-10-25 23:35:26.0  M1       -0.09   298.29  5   298.20   297.85   11.03    0  below
+
+  candidates: 0
+
+Ongoing-fire check — not a watch site
+  Same score, applied to the mask-30 pixel Milestone 2 selected from
+  the CONUS fire product. The pixel was already hot at the first scan,
+  so its recent baseline is the fire itself.
+  point: 32.810 N, 82.759 W, product FRP 166.2 MW
+  CONUS files listed: 36, containing the point: 36, elsewhere: 0
+  largest score: 12.36 K at 2025-10-13 22:11:17.0, 335.17 K minus baseline 322.81 K
+  candidates: 0
+
+  start_utc                  sector   score_K  base_K  n   max_K   near_K  dist_km  run  status
+  2025-10-13 21:01:17.0  CONUS        -        -  0   342.79   342.79    0.00    0  unscored
+  2025-10-13 21:06:17.0  CONUS        -        -  1   341.77   341.77    0.00    0  unscored
+  2025-10-13 21:11:17.0  CONUS        -        -  2   337.34   337.34    0.00    0  unscored
+  2025-10-13 21:16:17.0  CONUS    -9.59   341.77  3   332.18   332.18    0.00    0  below
+  2025-10-13 21:21:17.0  CONUS    -8.47   339.56  4   331.09   331.09    0.00    0  below
+  2025-10-13 21:26:17.0  CONUS    -7.12   337.34  5   330.23   330.23    0.00    0  below
+  2025-10-13 21:31:17.0  CONUS    -9.36   332.18  5   322.81   322.81    0.00    0  below
+  2025-10-13 21:36:17.0  CONUS    -5.24   331.09  5   325.85   325.85    0.00    0  below
+  2025-10-13 21:41:17.0  CONUS    -4.23   330.23  5   325.99   325.99    0.00    0  below
+  2025-10-13 21:46:17.0  CONUS    -3.76   325.99  5   322.23   322.23    0.00    0  below
+  2025-10-13 21:51:17.0  CONUS    -6.36   325.85  5   319.49   319.49    0.00    0  below
+  2025-10-13 21:56:17.0  CONUS     0.00   322.81  5   322.81   322.81    0.00    0  below
+  2025-10-13 22:01:17.0  CONUS     6.61   322.81  5   329.42   329.42    0.00    0  below
+  2025-10-13 22:06:17.0  CONUS     6.38   322.81  5   329.19   329.19    0.00    0  below
+  2025-10-13 22:11:17.0  CONUS    12.36   322.81  5   335.17   335.17    0.00    0  below
+  2025-10-13 22:16:17.0  CONUS     4.20   329.19  5   333.40   333.40    0.00    0  below
+  2025-10-13 22:21:17.0  CONUS    11.28   329.42  5   340.71   340.71    0.00    0  below
+  2025-10-13 22:26:17.0  CONUS     6.06   333.40  5   339.46   339.46    0.00    0  below
+  2025-10-13 22:31:17.0  CONUS     4.17   335.17  5   339.34   339.34    0.00    0  below
+  2025-10-13 22:36:17.0  CONUS    -1.54   339.34  5   337.81   337.81    0.00    0  below
+  2025-10-13 22:41:17.0  CONUS    -3.26   339.34  5   336.08   336.08    0.00    0  below
+  2025-10-13 22:46:17.0  CONUS    -1.65   339.34  5   337.69   337.69    0.00    0  below
+  2025-10-13 22:51:17.0  CONUS    -0.95   337.81  5   336.86   336.86    0.00    0  below
+  2025-10-13 22:56:17.0  CONUS     0.93   337.69  5   338.61   338.61    0.00    0  below
+  2025-10-13 23:01:17.0  CONUS     2.22   337.69  5   339.91   339.91    0.00    0  below
+  2025-10-13 23:06:17.0  CONUS     0.45   337.69  5   338.13   338.13    0.00    0  below
+  2025-10-13 23:11:17.0  CONUS     0.07   338.13  5   338.20   338.20    0.00    0  below
+  2025-10-13 23:16:17.0  CONUS    -3.12   338.20  5   335.08   335.08    0.00    0  below
+  2025-10-13 23:21:17.0  CONUS    -2.34   338.20  5   335.86   335.86    0.00    0  below
+  2025-10-13 23:26:17.0  CONUS    -3.27   338.13  5   334.86   334.86    0.00    0  below
+  2025-10-13 23:31:17.0  CONUS     0.63   335.86  5   336.49   336.49    0.00    0  below
+  2025-10-13 23:36:17.0  CONUS    -4.32   335.86  5   331.54   331.54    0.00    0  below
+  2025-10-13 23:41:17.0  CONUS    -3.53   335.08  5   331.54   331.54    0.00    0  below
+  2025-10-13 23:46:17.0  CONUS    -2.19   334.86  5   332.68   332.68    0.00    0  below
+  2025-10-13 23:51:17.0  CONUS    -5.01   332.68  5   327.66   327.66    0.00    0  below
+  2025-10-13 23:56:17.0  CONUS    -2.85   331.54  5   328.69   328.69    0.00    0  below
+
+Limits visible in this run
+  The threshold comes from one clear launch evening and one clear quiet
+  evening twelve days later. Clouds were not in either sample.
+  A fire that is already burning does not make a jump against its own
+  previous scans. A fire that ignites while the site is watched can pass
+  for the first two scans; the third is held back.
+  The pad pixel is on the coastline. The fire algorithm can label it
+  water and then miss a plume that has not moved inland.
+  Code 10 on a launch scan is a real fire-product detection of the plume.
+  Holding every fire code back would have dropped Flight 11.
+  Mesoscale tasking still decides whether the minute is scored at all.
+
+Log: outputs/m3_candidates.jsonl
+Report: outputs/m3_score.txt

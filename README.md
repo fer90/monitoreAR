@@ -36,9 +36,11 @@ Milestone 2 is also in the repository. It measures that pulse against a quiet me
 
 The 20 km maximum jumped 45.4 K above the pre-liftoff median, on two scans, and then returned to about 300 K. On 25 October, the nearest evening when a mesoscale sector contained the pad at the same clock time, that maximum has a standard deviation of 0.20 K. A fire pixel in Washington County, Georgia, the same evening stayed about 43 K above the surrounding land for at least 175 minutes, with a peak band-7 brightness temperature near 340 K. The full table is in [`outputs/m2_signal.txt`](outputs/m2_signal.txt). The walkthrough is in [`docs/signal-comparison.md`](docs/signal-comparison.md).
 
-That pair of events already fixes several design choices. They are written up in [`ARCHITECTURE.md`](ARCHITECTURE.md). The equations behind the numbers — the file path, the Planck conversion, the fixed grid, the viewing angles, how the figure is chosen, and how the comparison is scored — are written out in [`docs/`](docs/README.md).
+Milestone 3 scores that comparison. The watch list is Pad 1. The score is the hottest pixel within 20 km minus the median of that maximum on the previous mesoscale scans. The frozen threshold is 20 K. Flight 11 produces two candidates, 39.29 K at 23:23:54.9 UTC and 45.37 K at 23:24:54.9 UTC. The quiet evening's largest score is 0.04 K. An already-burning fire, scored with the same rule, peaks at 12.36 K and produces none. Candidates are logged with coordinates, the score, and the raw values in [`outputs/m3_candidates.jsonl`](outputs/m3_candidates.jsonl). The walkthrough is in [`docs/scoring.md`](docs/scoring.md).
 
-Milestones 3 through 6 are not built yet: the detector, a near-real-time poller, the public API and map, and packaging.
+That case study fixes the design choices written up in [`ARCHITECTURE.md`](ARCHITECTURE.md). The equations — the file path, the Planck conversion, the fixed grid, the viewing angles, how the figure is chosen, how the comparison is scored, and how the threshold is applied — are in [`docs/`](docs/README.md).
+
+Milestones 4 through 6 are not built yet: a near-real-time poller, the public API and map, and packaging.
 
 ## Reproduce the case study
 
@@ -49,6 +51,7 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python scripts/m1_starship_flight11.py
 .venv/bin/python scripts/m2_signal.py
+.venv/bin/python scripts/m3_score.py
 ```
 
 On Debian or Ubuntu, `python3 -m venv` needs the `python3-venv` package (`python3.12-venv` for this interpreter).
@@ -63,6 +66,11 @@ Milestone 2 reuses `data/m1/` and rewrites:
 - `outputs/m2_signal.png`
 - `outputs/m2_signal.txt`
 
+Milestone 3 reuses those files and rewrites:
+
+- `outputs/m3_score.txt`
+- `outputs/m3_candidates.jsonl`
+
 The run needs a network path to Amazon S3. Milestone 1 downloads the 36 mesoscale band-7 files for 23:18–23:36 UTC, about 11 MB. Milestone 2 adds the quiet-evening mesoscale window and three hours of CONUS band 7, about 139 MB, under `data/m2/`.
 
 ## Data
@@ -76,8 +84,9 @@ Band 7 Level 1b files store radiance in mW m⁻² sr⁻¹ (cm⁻¹)⁻¹. Bright
 ```
 scripts/m1_starship_flight11.py   Flight 11 scene
 scripts/m2_signal.py              quiet evening and fire comparison
-docs/                             equations and the two walkthroughs
-outputs/                          figures and the text reports
+scripts/m3_score.py               watch-site score and candidate log
+docs/                             equations and the walkthroughs
+outputs/                          figures, reports, and the candidate log
 requirements.txt                  libraries used by those scripts
 data/                             downloaded NetCDF, gitignored
 ARCHITECTURE.md                   decisions and the path to v0.1

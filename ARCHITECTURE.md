@@ -6,7 +6,7 @@ The goal is a small, readable pipeline: fetch one band, convert it in the open, 
 
 ## Current system
 
-Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Neither script detects launches.
+Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Milestone 3 is `scripts/m3_score.py`. It scores Pad 1 with the rule below and writes a candidate log. There is still no poller and no API.
 
 ```
 noaa-goes19  ABI-L1b-RadM/.../C07
@@ -115,18 +115,20 @@ Milestone 2 measured that tail. The table is [`outputs/m2_signal.txt`](outputs/m
 
 Farther out, the same window still sees 308.26 K at +130 s (25.4 km) and 307.54 K at +190 s (57.8 km). Those are about 8 K above the 20 km baseline, about 40 quiet-evening standard deviations, and they sit outside the neighbourhood that holds the launch. The 98th percentile within 20 km only reaches 305.02 K on the hot scans.
 
-A CONUS fire pixel in Washington County, Georgia, the same evening stayed about 43 K above its 10–30 km ring for every scan from 21:01 to 23:56 UTC. Its peak band-7 brightness temperature was 339.91 K. The amplitude matches the launch. The duration does not: two mesoscale scans, against at least 175 minutes. Milestone 3 still freezes the threshold, the radius, and the fire product. The 20 km window, the 10–30 km ring, and the 10 K duration count are measurements of this case.
+A CONUS fire pixel in Washington County, Georgia, the same evening stayed about 43 K above its 10–30 km ring for every scan from 21:01 to 23:56 UTC. Its peak band-7 brightness temperature was 339.91 K. The amplitude matches the launch. The duration does not: two mesoscale scans, against at least 175 minutes.
+
+**Made in Milestone 3.** The score is the hottest usable pixel within 20 km minus the median of that maximum on the previous covering scans, up to 5 and at least 3. The threshold is 20 K. DQF values 2, 3, and 4 do not enter. The script does not use the liftoff clock. On Flight 11 it emits 39.29 K at 23:23:54.9 UTC and 45.37 K at 23:24:54.9 UTC. The quiet evening's largest score is 0.04 K. The same rule on the already-burning fire peaks at 12.36 K. The walkthrough is [`docs/scoring.md`](docs/scoring.md). The 10–30 km ring stays in the log as a raw value. It is not the threshold.
 
 Day and night cannot share one absolute cutoff. Solar zenith at the Flight 11 liftoff was about 82°. Band 7 still sees reflected sunlight. A night launch will have a colder, cleaner background. The score stores the local solar zenith angle next to the brightness temperatures so a later threshold can use it. v0.1 does not build a separate reflectance product.
 
 ### A launch is short, a fire is not
 
-**v0.1.** The obvious Flight 11 anomaly lasted two mesoscale scans. A fire or an industrial source tends to stay hot. The log records the raw score either way. A candidate is held back when either:
+**Made in Milestone 3**, with one change forced by the Flight 11 fire files. The log records every scan at or above 20 K. A candidate is held back when either:
 
-- the same pixel stays anomalous for several consecutive scans, or
-- the official GOES fire product flags that pixel.
+- the watch site has already been at or above the threshold for 3 consecutive covering scans (a gap longer than 90 s starts the count over), or
+- the mesoscale fire product `ABI-L2-FDCM`, for the same sector and the same scan start, has a temporally filtered fire (mask codes 30–35) within 20 km of the hot pixel.
 
-The fire product is a filter, not the detector. If the fire file is missing, the candidate is stored and marked `fire_product=unavailable` rather than silently passed or dropped. Milestone 2 measured one real case in the CONUS product `ABI-L2-FDCC`, mask 30, on the scan starting 23:21:17 UTC. Which product the filter consults when a mesoscale sector covers the site is **open** until Milestone 3.
+Codes 10–15 are stored and do not hold the scan back. The FDCM file for 23:24:54.9 UTC marks a `good_fire_pixel` (code 10, 17.7 MW) 3.39 km from the Flight 11 hot pixel. Holding every fire code back would have dropped that candidate. The pixel nearest the pad is mask 150, the file's sea-water / bright-desert class, so a plume that stays on the pad is invisible to this product. A missing fire file is stored as `fire_file=unavailable`. The candidate is kept.
 
 ### Fixed watch list
 
@@ -211,8 +213,7 @@ FastAPI reads rows    Leaflet reads the JSON
 
 ## Open points
 
-- The numeric threshold, the background window, and the neighbourhood radius. Milestone 2 measured them and did not freeze them. On Flight 11 the 20 km maximum jumped 45.41 K and, one scan earlier, 39.29 K, against a quiet-evening standard deviation of 0.20 K and a day-to-day offset of 1.74 K. A fire the same evening held a ~43 K anomaly for at least 175 minutes. The 20 km neighbourhood, the 10–30 km ring, and the 10 K duration count are the windows used to see that. Milestone 3 freezes the rule. Details are in [`docs/signal-comparison.md`](docs/signal-comparison.md).
-- Which published fire product is available at mesoscale cadence for these sites.
+- Whether a later launch under cloud, or a fire that flares by more than 20 K above its own recent median, still fits this rule. The frozen numbers are in [`docs/scoring.md`](docs/scoring.md). They come from one clear evening.
 - The second and third watch areas, after the same geolocation and pixel-size check used for Pad 1.
 - The license file, and the real Cafecito URL.
 - Whether the map crop is a PNG on disk or a blob in SQLite. Either is fine at v0.1 size. Pick one in Milestone 5 and keep the API field stable.
