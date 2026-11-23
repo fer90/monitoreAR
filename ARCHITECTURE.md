@@ -6,7 +6,7 @@ The goal is a small, readable pipeline: fetch one band, convert it in the open, 
 
 ## Current system
 
-Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Milestone 3 is `scripts/m3_score.py`. It scores Pad 1 with the rule below and writes a candidate log. There is still no poller and no API.
+Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Milestone 3 is `scripts/m3_score.py`. It scores Pad 1 with the rule below and writes a candidate log. Milestone 4 is `scripts/m4_poll.py`. It polls two live passes and stores every scan in SQLite. There is still no API.
 
 ```
 noaa-goes19  ABI-L1b-RadM/.../C07
@@ -24,7 +24,7 @@ noaa-goes19  ABI-L1b-RadM/.../C07
    crop around Pad 1, per-scan statistics, PNG + text report in outputs/
 ```
 
-Libraries are numpy, xarray, netCDF4, s3fs, and matplotlib. There is no package layout, no database, and no web server. The equations and the Flight 11 numbers are written out in [`docs/`](docs/README.md).
+Libraries are numpy, xarray, netCDF4, s3fs, and matplotlib. SQLite comes from the standard library. There is no package layout and no web server. The equations, the Flight 11 numbers, and the poller walkthrough are in [`docs/`](docs/README.md).
 
 The case study is Starship Flight 11, GOES-19, 13 October 2025, 23:18–23:36 UTC, ABI Mode 6, band 7 only. Pad 1 is 25.9962°N, 97.1544°W.
 
@@ -91,7 +91,7 @@ During Flight 11 only sector M2 contained Pad 1. M1 was over the tropical Atlant
 
 Mesoscale sector boundaries move. M2 is not "the Texas sector" in general. Every file has to be tested by projecting the watch point into `x`/`y` and checking that it lies inside the scan-angle range. The file's lat/lon bounding box is a useful hint and is not the test, because the sector is a rectangle in scan angle.
 
-**v0.1.** The near-real-time loop uses a mesoscale file only when that test passes. If neither sector contains the watch point, the loop writes a coverage gap and does not score CONUS or full-disk data. A 5-minute product cannot see a signal that occupies one or two 1-minute scans. Falling back would create quiet false confidence.
+**Made in Milestone 4.** The poller uses a mesoscale file only when that test passes. If neither sector contains the watch point, it stores `gap_reason=sector_not_covering` and does not score CONUS or full-disk data. A 5-minute product cannot see a signal that occupies one or two 1-minute scans. On 23 November 2026, hours 21 and 22 UTC, every listed mesoscale file missed Pad 1. The newest covering scan in that window was none.
 
 ### Keep every quality flag
 
@@ -138,19 +138,19 @@ Coordinates are the pad. The stored detection coordinate is the hot pixel, which
 
 ### Store candidates in SQLite
 
-**v0.1.** One table, one row per candidate. Columns include scan start, scan end, watch-area name, pixel latitude, pixel longitude, distance from the pad, score, pad-pixel brightness temperature, neighbourhood maximum, background value used in the score, solar zenith, DQF counts, saturated flag, fire-filter result, and the source object key.
+**Made in Milestone 4.** The file is `data/m4/monitorear.sqlite`, written by `scripts/m4_poll.py` with the standard-library `sqlite3`. It is gitignored. The walkthrough is [`docs/polling.md`](docs/polling.md), and the latest run is [`outputs/m4_poll.txt`](outputs/m4_poll.txt).
 
-SQLite is a single file the poller writes and the API reads. The public API does not recompute from NetCDF. JSON would be enough for a handful of rows; SQLite is the choice because the questions are by time and by site. The schema stays boring and can be dumped to JSON for the API response.
+`scans` has one row per source object key. Columns include scan start, scan end, watch-area name, pixel latitude, pixel longitude, distance from the pad, score, the pad-pixel brightness temperature, the neighbourhood maximum, the baseline and the samples that produced it, solar zenith, DQF counts, the saturated flag, the fire-product result, and the source key. Covering scans under 20 K are stored with status `below`, and scans with fewer than three previous looks with status `unscored`. The next baseline is the median of those stored maxima. A candidate is a row with status `emit` or `held_back`. The same key is inserted once. A second pass does not replace the row.
 
-A coverage-gap row is a different table, or the same table with a null score and a reason such as `sector_not_covering` or `file_missing`. The map can show a gap. It does not draw a launch for one.
+A sector that misses the pad is a `scans` row with `covered=0` and `gap_reason=sector_not_covering`. The `gaps` table is for the other two holes: `file_missing` when a same-sector step is longer than 90 s, and `bucket_lag` when the newest listed scan start is more than 5 minutes behind the poll clock. `poll_runs` stores the clock and the counts for each pass. The API, when it exists, reads these rows and does not recompute from NetCDF. The map can show a gap. It does not draw a launch for one.
 
 ### Poll the latest file, and tolerate holes
 
-**v0.1.** A single process wakes about once a minute, lists the current and previous hour under `ABI-L1b-RadM` for the operational GOES-East bucket, and considers band-7 objects whose scan start is newer than the last one scored.
+**Made in Milestone 4.** `scripts/m4_poll.py` lists the current hour and the previous hour of `ABI-L1b-RadM` band 7, scores a file when Pad 1 is inside its scan-angle grid, and exits after two passes 60 s apart. The bucket constant is `noaa-goes19`. `read_watch` stops the process when `platform_ID` is not `G19`. That check is a sanity check. `orbital_slot` is printed by the Milestone 1 inspection and is not a poller column. When NOAA moves GOES-East, the bucket constant changes in one place. The script does not discover the handoff.
 
-The bucket name comes from configuration, default `noaa-goes19`, because that is the operational GOES-East satellite as of 2026. The code still reads `platform_ID` and `orbital_slot` from the file. A hardcoded "G19" check is a sanity check, not the way a future satellite handoff should be discovered. When NOAA moves GOES-East, the bucket constant changes in one place.
+`s3fs` caches directory listings, and `fs.ls` has no refresh argument. Each pass calls `invalidate_cache` on the hour prefix before listing. The first run skipped that call. Its second pass repeated 188 keys and a newest scan start of 22:33:54.9, and the report age of 2.4 min was that cache. After the fix, the confirming run at 22:40:02.0 UTC saw newest start 22:39:24.9 (age 37 s) and, one minute later, newest start 22:40:54.9 (age 13 s, about 6 s after that scan ended). Those ages are poll clock minus scan start, for this evening only.
 
-Missing keys are normal. The loop logs the hole, waits, and tries again. It does not interpolate a brightness temperature across a gap. The `c` timestamp in the filename measured 3–5 seconds after scan end on the Flight 11 files. That is product-creation time at the ground station. It is not the time the object became visible on AWS. The poller has to accept several extra minutes of bucket lag, and a file that appears out of order, without scoring the same key twice.
+A previous covering scan older than 30 minutes does not enter the baseline, so the Flight 11 rows cannot become the background for a later day. A file that arrives after a later scan was stored is scored from the earlier rows only. The later row is not rewritten. This sample had no late file. Missing keys are logged as `file_missing` once the same-sector step exceeds 90 s. The loop does not interpolate a brightness temperature across a gap. The `c` timestamp in the filename measured 3–5 seconds after scan end on the Flight 11 files. That is product-creation time at the ground station. It is not the time the object became visible on AWS. The 5-minute lag note was not reached on the fresh listings.
 
 ### Public surface
 
@@ -162,7 +162,7 @@ There is no account system, no write API, and no alert subscription in v0.1.
 
 ### How the code will grow
 
-**v0.1**, at packaging time. Until the detector exists, each milestone stays a script that can be run and read on its own. Milestone 6 extracts the shared pieces only after Milestones 2 and 3 have settled the math:
+**v0.1**, at packaging time. Until then, each milestone stays a script that can be run and read on its own. Milestone 6 extracts the shared pieces. The score and the poller are already settled:
 
 | Module | Responsibility |
 | --- | --- |
@@ -192,7 +192,7 @@ download → BT → DQF mask → crop each watch point
         ▼
 score against the recent local background
         │
-        ├─ below threshold ─────────► nothing stored (the scan time is still remembered)
+        ├─ below threshold ─────────► row stored (status below); it feeds the next baseline
         ▼
 apply persistence / fire-product filter
         │
@@ -202,6 +202,8 @@ SQLite row + thermal-crop PNG
         ▼
 FastAPI reads rows    Leaflet reads the JSON
 ```
+
+Milestone 4 implements the list, the score, and the SQLite rows. The script takes two passes and exits. The thermal-crop file and the FastAPI page are Milestone 5.
 
 ## Non-goals
 

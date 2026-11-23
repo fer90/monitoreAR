@@ -38,9 +38,11 @@ The 20 km maximum jumped 45.4 K above the pre-liftoff median, on two scans, and 
 
 Milestone 3 scores that comparison. The watch list is Pad 1. The score is the hottest pixel within 20 km minus the median of that maximum on the previous mesoscale scans. The frozen threshold is 20 K. Flight 11 produces two candidates, 39.29 K at 23:23:54.9 UTC and 45.37 K at 23:24:54.9 UTC. The quiet evening's largest score is 0.04 K. An already-burning fire, scored with the same rule, peaks at 12.36 K and produces none. Candidates are logged with coordinates, the score, and the raw values in [`outputs/m3_candidates.jsonl`](outputs/m3_candidates.jsonl). The walkthrough is in [`docs/scoring.md`](docs/scoring.md).
 
-That case study fixes the design choices written up in [`ARCHITECTURE.md`](ARCHITECTURE.md). The equations — the file path, the Planck conversion, the fixed grid, the viewing angles, how the figure is chosen, how the comparison is scored, and how the threshold is applied — are in [`docs/`](docs/README.md).
+That case study fixes the design choices written up in [`ARCHITECTURE.md`](ARCHITECTURE.md). The equations — the file path, the Planck conversion, the fixed grid, the viewing angles, how the figure is chosen, how the comparison is scored, how the threshold is applied, and how a scan is stored — are in [`docs/`](docs/README.md).
 
-Milestones 4 through 6 are not built yet: a near-real-time poller, the public API and map, and packaging.
+Milestone 4 is the poller. `scripts/m4_poll.py` replays the Flight 11 hour into SQLite, then takes two live passes a minute apart over the current and previous hour of mesoscale band 7. The score is the Milestone 3 rule, and the same object key is stored once. A sector that misses Pad 1 is stored as a coverage gap. On 23 November 2026, hours 21 and 22 UTC, neither mesoscale sector contained the pad, so the live passes stored no candidate. The only emitted rows are still the two Flight 11 scans, 39.29 K and 45.37 K. The run log is [`outputs/m4_poll.txt`](outputs/m4_poll.txt). The walkthrough is [`docs/polling.md`](docs/polling.md).
+
+Milestones 5 and 6 are not built yet: the public API and map, and packaging.
 
 ## Reproduce the case study
 
@@ -52,6 +54,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/m1_starship_flight11.py
 .venv/bin/python scripts/m2_signal.py
 .venv/bin/python scripts/m3_score.py
+.venv/bin/python scripts/m4_poll.py
 ```
 
 On Debian or Ubuntu, `python3 -m venv` needs the `python3-venv` package (`python3.12-venv` for this interpreter).
@@ -71,7 +74,13 @@ Milestone 3 reuses those files and rewrites:
 - `outputs/m3_score.txt`
 - `outputs/m3_candidates.jsonl`
 
-The run needs a network path to Amazon S3. Milestone 1 downloads the 36 mesoscale band-7 files for 23:18–23:36 UTC, about 11 MB. Milestone 2 adds the quiet-evening mesoscale window and three hours of CONUS band 7, about 139 MB, under `data/m2/`.
+Milestone 4 reuses files already on disk and rewrites:
+
+- `outputs/m4_poll.txt`
+
+It also writes `data/m4/monitorear.sqlite`. A second run leaves stored keys in place and only inserts files the bucket has added.
+
+The run needs a network path to Amazon S3. Milestone 1 downloads the 36 mesoscale band-7 files for 23:18–23:36 UTC, about 11 MB. Milestone 2 adds the quiet-evening mesoscale window and three hours of CONUS band 7, about 139 MB, under `data/m2/`. Milestone 4 adds the rest of Flight 11 hour 23 and the live mesoscale files it opened, about 87 MB under `data/m4/cache/`, plus the SQLite file (about 188 KB). All of `data/` stays gitignored.
 
 ## Data
 
@@ -85,6 +94,7 @@ Band 7 Level 1b files store radiance in mW m⁻² sr⁻¹ (cm⁻¹)⁻¹. Bright
 scripts/m1_starship_flight11.py   Flight 11 scene
 scripts/m2_signal.py              quiet evening and fire comparison
 scripts/m3_score.py               watch-site score and candidate log
+scripts/m4_poll.py                one-minute poller and the SQLite store
 docs/                             equations and the walkthroughs
 outputs/                          figures, reports, and the candidate log
 requirements.txt                  libraries used by those scripts

@@ -1,0 +1,50 @@
+Milestone 4 — poller, Starbase Pad 1, GOES-19 ABI band 7
+
+What this run did
+  The score, the 20 K threshold, the 20 km neighbourhood, the five-scan
+  median, and the fire-product hold are the Milestone 3 rule. This script
+  does not recompute the threshold.
+  Database: data/m4/monitorear.sqlite
+  A scan older than 30 min does not enter the baseline, so the Flight 11
+  rows do not become the background for a later day.
+  The same source key is inserted once. A later pass leaves the row as it was.
+
+Flight 11 hour, replayed through the poller
+  listed 120, newly scored 0, sector missed the pad 65
+  candidates:
+    2025-10-13 23:23:54.9  emit  score 39.29 K  max 339.43 K  1.24 km
+      noaa-goes19/ABI-L1b-RadM/2025/286/23/OR_ABI-L1b-RadM2-M6C07_G19_s20252862323549_e20252862324019_c20252862324058.nc
+    2025-10-13 23:24:54.9  emit  score 45.37 K  max 345.55 K  10.09 km
+      noaa-goes19/ABI-L1b-RadM/2025/286/23/OR_ABI-L1b-RadM2-M6C07_G19_s20252862324549_e20252862325018_c20252862325056.nc
+  missing-file gaps inside that hour: 0
+
+Live passes
+  poll at 2026-11-23 22:40:02.0
+    hours: noaa-goes19/ABI-L1b-RadM/2026/327/21/ noaa-goes19/ABI-L1b-RadM/2026/327/22/
+    listed 199, already stored 188, newly scored 0, sector missed the pad 11, new candidates 0
+    newest listed scan start: 2026-11-23 22:39:24.9
+    age of that scan at the poll clock: 0.6 min
+    newest scan that contained the pad: None
+    age of pad coverage: no covering scan in the stored window
+  poll at 2026-11-23 22:41:07.5
+    hours: noaa-goes19/ABI-L1b-RadM/2026/327/21/ noaa-goes19/ABI-L1b-RadM/2026/327/22/
+    listed 202, already stored 199, newly scored 0, sector missed the pad 3, new candidates 0
+    newest listed scan start: 2026-11-23 22:40:54.9
+    age of that scan at the poll clock: 0.2 min
+    newest scan that contained the pad: None
+    age of pad coverage: no covering scan in the stored window
+
+Live candidates stored: 0
+
+Live gap rows: 0
+
+Limits visible in this run
+  The threshold is still the 20 K constant chosen from Flight 11.
+  A file that arrives after a later scan was already stored is scored
+  from the earlier scans only. The later row is not rewritten.
+  The c timestamp in a filename is product-creation time, not the time
+  the object appeared in the bucket. The lag above is one poll clock
+  minus the newest scan start in the listing, for this run only.
+  There is no API and no map yet.
+
+Report: outputs/m4_poll.txt
