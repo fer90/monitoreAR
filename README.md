@@ -4,7 +4,7 @@ monitoreAR is a small, open-source detector for large rocket launches in public 
 
 The project is for learning the real limits of this data. A pixel is a few kilometres wide, a scan can miss a burn that lasts about a minute, clouds and sunlight get into the measurement, and a hot pixel is not a flame temperature. Those limits stay visible in the method and in the output. monitoreAR is not an operational launch service, and it is not trying to match commercial detectors.
 
-The software is free to use. A Cafecito link will sit on the public page once that page exists. There is no paid tier.
+The software is free to use. The page carries a Cafecito link as a placeholder. The project page on Cafecito is not set up yet. There is no paid tier.
 
 ## What v0.1 will do
 
@@ -42,7 +42,9 @@ That case study fixes the design choices written up in [`ARCHITECTURE.md`](ARCHI
 
 Milestone 4 is the poller. `scripts/m4_poll.py` replays the Flight 11 hour into SQLite, then takes two live passes a minute apart over the current and previous hour of mesoscale band 7. The score is the Milestone 3 rule, and the same object key is stored once. A sector that misses Pad 1 is stored as a coverage gap. On 23 November 2026, hours 21 and 22 UTC, neither mesoscale sector contained the pad, so the live passes stored no candidate. The only emitted rows are still the two Flight 11 scans, 39.29 K and 45.37 K. The run log is [`outputs/m4_poll.txt`](outputs/m4_poll.txt). The walkthrough is [`docs/polling.md`](docs/polling.md).
 
-Milestones 5 and 6 are not built yet: the public API and map, and packaging.
+Milestone 5 is the page. `scripts/m5_api.py` reads the SQLite rows and serves them at `http://127.0.0.1:8000/`. `GET /detections` is the candidates, including the score, the raw temperatures, and the source file. The map draws the hot pixel of each candidate and the pad. The thermal crop is a PNG in [`outputs/crops/`](outputs/crops/). On this database the two emitted points are still Flight 11, 39.29 K and 45.37 K, and the newest stored scan is a coverage gap: 23 November 2026, 22:40:54.9 UTC, sector M2, the sector missed the pad. The walkthrough is [`docs/api.md`](docs/api.md).
+
+Milestone 6 is not built yet: notebooks and packaging.
 
 ## Reproduce the case study
 
@@ -55,7 +57,10 @@ python3 -m venv .venv
 .venv/bin/python scripts/m2_signal.py
 .venv/bin/python scripts/m3_score.py
 .venv/bin/python scripts/m4_poll.py
+.venv/bin/python scripts/m5_api.py
 ```
+
+`scripts/m5_api.py` listens on http://127.0.0.1:8000/ until interrupted. It needs the database from the poller.
 
 On Debian or Ubuntu, `python3 -m venv` needs the `python3-venv` package (`python3.12-venv` for this interpreter).
 
@@ -80,11 +85,16 @@ Milestone 4 reuses files already on disk and rewrites:
 
 It also writes `data/m4/monitorear.sqlite`. A second run leaves stored keys in place and only inserts files the bucket has added.
 
+Milestone 5 reads that database and rewrites:
+
+- `outputs/m5_api.txt`
+- `outputs/crops/*.png` for each candidate that does not already have one
+
 The run needs a network path to Amazon S3. Milestone 1 downloads the 36 mesoscale band-7 files for 23:18–23:36 UTC, about 11 MB. Milestone 2 adds the quiet-evening mesoscale window and three hours of CONUS band 7, about 139 MB, under `data/m2/`. Milestone 4 adds the rest of Flight 11 hour 23 and the live mesoscale files it opened, about 87 MB under `data/m4/cache/`, plus the SQLite file (about 188 KB). All of `data/` stays gitignored.
 
 ## Data
 
-GOES-19 ABI data are produced by NOAA and distributed on the NOAA Open Data Registry. This project is not a NOAA service. Each detection, when the pipeline exists, will keep the source object name so the file can be fetched again.
+GOES-19 ABI data are produced by NOAA and distributed on the NOAA Open Data Registry. This project is not a NOAA service. Each detection keeps the source object name so the file can be fetched again.
 
 Band 7 Level 1b files store radiance in mW m⁻² sr⁻¹ (cm⁻¹)⁻¹. Brightness temperature in this repository is computed from the Planck coefficients inside the same file. Those coefficients do not remove reflected sunlight. At the Flight 11 liftoff the Sun was still about 8° above the horizon, so the background includes a solar contribution. The 40 K jump in one pixel does not.
 
@@ -95,8 +105,10 @@ scripts/m1_starship_flight11.py   Flight 11 scene
 scripts/m2_signal.py              quiet evening and fire comparison
 scripts/m3_score.py               watch-site score and candidate log
 scripts/m4_poll.py                one-minute poller and the SQLite store
+scripts/m5_api.py                 JSON API and the map page
+scripts/m5_map.html               the page the API serves
 docs/                             equations and the walkthroughs
-outputs/                          figures, reports, and the candidate log
+outputs/                          figures, reports, crops, and the candidate log
 requirements.txt                  libraries used by those scripts
 data/                             downloaded NetCDF, gitignored
 ARCHITECTURE.md                   decisions and the path to v0.1

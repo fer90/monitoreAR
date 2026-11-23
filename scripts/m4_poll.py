@@ -6,6 +6,7 @@ and previous hour of ABI-L1b-RadM on noaa-goes19, scores a file only when
 Pad 1 lies inside its scan-angle grid, and writes SQLite rows. A sector that
 misses the pad, a missing key, and a late file are stored as gaps. The same
 object key is never scored twice. Brightness temperature is not interpolated.
+A new candidate also writes its map crop under outputs/crops/.
 
 This run replays the Flight 11 hour, then takes two live passes a minute
 apart. Each pass drops the cached directory listing before it lists. The
@@ -557,6 +558,9 @@ def ingest_listing(fs, conn, cache, listed, label):
         scored += 1
         if status in {"emit", "held_back"}:
             candidates += 1
+            # The map reads this PNG. It does not open the NetCDF.
+            import m5_api
+            m5_api.write_crop(path, key, measured["score_k"], status)
         print(
             f"  {m3.fmt_time(meta['start'])} {meta['sector']} "
             f"{status} score={measured['score_k'] if measured['scored'] else '-'}"

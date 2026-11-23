@@ -1,0 +1,32 @@
+Milestone 5 — API and map, Starbase Pad 1, GOES-19 ABI band 7
+
+What this serves
+  GET /detections?since=YYYY-MM-DD HH:MM:SS
+  Candidates only: status emit or held_back, newest scan start first.
+  The score is the value already stored. This process does not recompute it.
+  GET /coverage is the latest stored scan and any open gap row.
+  GET / is the map. It fetches those two URLs.
+  Listening on http://127.0.0.1:8000/
+
+Crops
+  A candidate crop is a PNG in outputs/crops/, named from the object key.
+  The JSON field is crop_url. Temperatures in the JSON are rounded to 0.01 K.
+  Colour scale 283.43 K to 350.0 K, the Flight 11 figure.
+
+Candidates: 2
+  2025-10-13 23:23:54.9  emit  score 39.29 K  max 339.43 K  1.24 km
+    outputs/crops/OR_ABI-L1b-RadM2-M6C07_G19_s20252862323549_e20252862324019_c20252862324058.png  93988 bytes
+  2025-10-13 23:24:54.9  emit  score 45.37 K  max 345.55 K  10.09 km
+    outputs/crops/OR_ABI-L1b-RadM2-M6C07_G19_s20252862324549_e20252862325018_c20252862325056.png  97789 bytes
+
+Latest stored scan: 2026-11-23 22:40:54.9  M2  sector_not_covering
+Open gap rows: 0
+
+Limits visible on the page
+  The 20 K threshold is still the Flight 11 constant.
+  A coverage gap is the latest scan when the sector misses the pad.
+  The map draws no launch for that row.
+  The Cafecito link is a placeholder. The project page is not set up.
+  There is no account, no write API, and no alert.
+
+Report: outputs/m5_api.txt

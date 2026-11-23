@@ -6,7 +6,7 @@ The goal is a small, readable pipeline: fetch one band, convert it in the open, 
 
 ## Current system
 
-Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Milestone 3 is `scripts/m3_score.py`. It scores Pad 1 with the rule below and writes a candidate log. Milestone 4 is `scripts/m4_poll.py`. It polls two live passes and stores every scan in SQLite. There is still no API.
+Milestone 1 is `scripts/m1_starship_flight11.py`. It draws the Flight 11 scene. Milestone 2 is `scripts/m2_signal.py`. It compares that scene with a quiet evening and a fire. Milestone 3 is `scripts/m3_score.py`. It scores Pad 1 with the rule below and writes a candidate log. Milestone 4 is `scripts/m4_poll.py`. It polls two live passes and stores every scan in SQLite. Milestone 5 is `scripts/m5_api.py`. It serves those rows as JSON and on one map.
 
 ```
 noaa-goes19  ABI-L1b-RadM/.../C07
@@ -24,7 +24,7 @@ noaa-goes19  ABI-L1b-RadM/.../C07
    crop around Pad 1, per-scan statistics, PNG + text report in outputs/
 ```
 
-Libraries are numpy, xarray, netCDF4, s3fs, and matplotlib. SQLite comes from the standard library. There is no package layout and no web server. The equations, the Flight 11 numbers, and the poller walkthrough are in [`docs/`](docs/README.md).
+Libraries are numpy, xarray, netCDF4, s3fs, matplotlib, FastAPI, and uvicorn. SQLite comes from the standard library. There is no package layout. The page listens on `127.0.0.1:8000`. The equations, the Flight 11 numbers, the poller, and the API are in [`docs/`](docs/README.md).
 
 The case study is Starship Flight 11, GOES-19, 13 October 2025, 23:18–23:36 UTC, ABI Mode 6, band 7 only. Pad 1 is 25.9962°N, 97.1544°W.
 
@@ -154,11 +154,11 @@ A previous covering scan older than 30 minutes does not enter the baseline, so t
 
 ### Public surface
 
-**v0.1.** FastAPI serves `GET /detections?since=...` from SQLite. The response is the stored columns, including the raw temperatures and the source key. One HTML page uses Leaflet to plot those points and links each point at its thermal crop.
+**Made in Milestone 5.** FastAPI serves `GET /detections?since=...` from SQLite. The response is the stored columns, including the temperatures rounded to 0.01 K and the source key, plus `crop_url`. `GET /coverage` is the newest stored scan and any open gap row. One HTML page, `scripts/m5_map.html`, uses Leaflet to plot the hot pixels and the pad, and each point links to its thermal crop. The walkthrough is [`docs/api.md`](docs/api.md). The startup log is [`outputs/m5_api.txt`](outputs/m5_api.txt).
 
-The crop is written when the candidate is scored, as a small PNG next to the database or as bytes in a column. The page does not re-download the NetCDF. The page states the resolution, the cadence, the miss on small vehicles, and the NOAA attribution. The Cafecito control is a link with a placeholder URL until the real one exists.
+The crop is a PNG in `outputs/crops/`, named from the object key, written when the candidate is scored. The page does not re-download the NetCDF. The colour scale is the Flight 11 figure, 283.43 K to 350 K. The page states the resolution, the cadence, the miss on small vehicles, and the NOAA attribution. The Cafecito control links to `https://cafecito.app/` and is labelled as a placeholder. The project page is not set up.
 
-There is no account system, no write API, and no alert subscription in v0.1.
+There is no account system, no write API, and no alert subscription. The process binds to `127.0.0.1` only.
 
 ### How the code will grow
 
@@ -203,7 +203,7 @@ SQLite row + thermal-crop PNG
 FastAPI reads rows    Leaflet reads the JSON
 ```
 
-Milestone 4 implements the list, the score, and the SQLite rows. The script takes two passes and exits. The thermal-crop file and the FastAPI page are Milestone 5.
+Milestone 4 implements the list, the score, and the SQLite rows. The script takes two passes and exits. Milestone 5 writes the thermal-crop PNG and serves the FastAPI page. The page is local. It is not a deployed service.
 
 ## Non-goals
 
@@ -217,5 +217,4 @@ Milestone 4 implements the list, the score, and the SQLite rows. The script take
 
 - Whether a later launch under cloud, or a fire that flares by more than 20 K above its own recent median, still fits this rule. The frozen numbers are in [`docs/scoring.md`](docs/scoring.md). They come from one clear evening.
 - The second and third watch areas, after the same geolocation and pixel-size check used for Pad 1.
-- The license file, and the real Cafecito URL.
-- Whether the map crop is a PNG on disk or a blob in SQLite. Either is fine at v0.1 size. Pick one in Milestone 5 and keep the API field stable.
+- The license file, and the real Cafecito URL. The page links to `https://cafecito.app/` and labels that link as a placeholder.
