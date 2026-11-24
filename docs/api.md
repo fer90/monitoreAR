@@ -35,9 +35,9 @@ The picture is the Milestone 1 window, geolocated on the fixed grid, with the sa
 
 ## The page
 
-`GET /` is one HTML page. It fetches `/detections` and `/coverage`. The orange points are emitted hot pixels. A held candidate would be gray. The open circle is the pad, and it is not a detection. Each point's popup and each card show the crop. The limits on the page are the pixel size at Pad 1, the 60 s revisit, the coverage gap, the 20 K rule, the miss on small vehicles, and the NOAA attribution.
+`GET /` reads `monitorear/map.html` on every request. `scripts/m5_map.html` is that same file. The page fetches `/detections` and `/coverage`. The orange points are emitted hot pixels. A held candidate would be gray. The open circle is the pad, and it is not a detection. Each point's popup and each card show the crop. The limits on the page are the pixel size at Pad 1, the 60 s revisit, the coverage gap, the 20 K rule, the miss on small vehicles, and the NOAA attribution.
 
-The basemap is OpenStreetMap, loaded in the browser along with Leaflet. The Cafecito control is a link to `https://cafecito.app/` labelled as a placeholder. The project page is not set up. There is no account, no write route, and no alert.
+The basemap is OpenStreetMap, loaded in the browser along with Leaflet. The Cafecito control links to `https://cafecito.app/ferno90`. There is no account, no write route, and no alert.
 
 ## What this page does not settle
 

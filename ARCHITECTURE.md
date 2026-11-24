@@ -142,7 +142,7 @@ Coordinates are the pad. The stored detection coordinate is the hot pixel, which
 
 `scans` has one row per source object key. Columns include scan start, scan end, watch-area name, pixel latitude, pixel longitude, distance from the pad, score, the pad-pixel brightness temperature, the neighbourhood maximum, the baseline and the samples that produced it, solar zenith, DQF counts, the saturated flag, the fire-product result, and the source key. Covering scans under 20 K are stored with status `below`, and scans with fewer than three previous looks with status `unscored`. The next baseline is the median of those stored maxima. A candidate is a row with status `emit` or `held_back`. The same key is inserted once. A second pass does not replace the row.
 
-A sector that misses the pad is a `scans` row with `covered=0` and `gap_reason=sector_not_covering`. The `gaps` table is for the other two holes: `file_missing` when a same-sector step is longer than 90 s, and `bucket_lag` when the newest listed scan start is more than 5 minutes behind the poll clock. `poll_runs` stores the clock and the counts for each pass. The API, when it exists, reads these rows and does not recompute from NetCDF. The map can show a gap. It does not draw a launch for one.
+A sector that misses the pad is a `scans` row with `covered=0` and `gap_reason=sector_not_covering`. The `gaps` table is for the other two holes: `file_missing` when a same-sector step is longer than 90 s, and `bucket_lag` when the newest listed scan start is more than 5 minutes behind the poll clock. `poll_runs` stores the clock and the counts for each pass. The API reads these rows and does not recompute from NetCDF. The map can show a gap. It does not draw a launch for one.
 
 ### Poll the latest file, and tolerate holes
 
@@ -154,15 +154,15 @@ A previous covering scan older than 30 minutes does not enter the baseline, so t
 
 ### Public surface
 
-**Made in Milestone 5.** FastAPI serves `GET /detections?since=...` from SQLite. The response is the stored columns, including the temperatures rounded to 0.01 K and the source key, plus `crop_url`. `GET /coverage` is the newest stored scan and any open gap row. One HTML page, `scripts/m5_map.html`, uses Leaflet to plot the hot pixels and the pad, and each point links to its thermal crop. The walkthrough is [`docs/api.md`](docs/api.md). The startup log is [`outputs/m5_api.txt`](outputs/m5_api.txt).
+**Made in Milestone 5.** FastAPI serves `GET /detections?since=...` from SQLite. The response is the stored columns, including the temperatures rounded to 0.01 K and the source key, plus `crop_url`. `GET /coverage` is the newest stored scan and any open gap row. One HTML page, `monitorear/map.html`, uses Leaflet to plot the hot pixels and the pad, and each point links to its thermal crop. `scripts/m5_map.html` is that same file. The walkthrough is [`docs/api.md`](docs/api.md). The startup log is [`outputs/m5_api.txt`](outputs/m5_api.txt).
 
-The crop is a PNG in `outputs/crops/`, named from the object key, written when the candidate is scored. The page does not re-download the NetCDF. The colour scale is the Flight 11 figure, 283.43 K to 350 K. The page states the resolution, the cadence, the miss on small vehicles, and the NOAA attribution. The Cafecito control links to `https://cafecito.app/` and is labelled as a placeholder. The project page is not set up.
+The crop is a PNG in `outputs/crops/`, named from the object key, written when the candidate is scored. The page does not re-download the NetCDF. The colour scale is the Flight 11 figure, 283.43 K to 350 K. The page states the resolution, the cadence, the miss on small vehicles, and the NOAA attribution. The Cafecito control links to `https://cafecito.app/ferno90`.
 
 There is no account system, no write API, and no alert subscription. The process binds to `127.0.0.1` only.
 
-### How the code will grow
+### How the code is split
 
-**v0.1**, at packaging time. Until then, each milestone stays a script that can be run and read on its own. Milestone 6 extracts the shared pieces. The score and the poller are already settled:
+**Made in Milestone 6.** The shared pieces are the `monitorear` package. `scripts/m1_starship_flight11.py` through `scripts/m5_api.py` import those modules and call the same `main` functions. `pyproject.toml` is the dependency list. SQLite comes from the standard library. The license is MIT, in [`LICENSE`](LICENSE).
 
 | Module | Responsibility |
 | --- | --- |
@@ -174,7 +174,7 @@ There is no account system, no write API, and no alert subscription. The process
 | `poll` | latest-file loop |
 | `api` | FastAPI and the map page |
 
-Notebooks for Milestones 1–3 import those functions and keep the narrative. `pyproject.toml` replaces the loose `requirements.txt` at that point. Dependencies stay on the current list plus FastAPI and a SQLite driver from the standard library. Cartopy, Satpy, and goes2go stay out unless a later problem cannot be stated without them.
+Notebooks in [`notebooks/`](notebooks/) import those functions, narrate Flight 11, and run the offline self-tests. They do not download the bucket again and they do not refit 20 K. Jupyter is an optional extra (`pip install -e ".[notebooks]"`). Cartopy, Satpy, and goes2go stay out unless a later problem cannot be stated without them. The commands are in [`docs/running.md`](docs/running.md). The measurements that fixed the constants are in [`docs/lessons-learned.md`](docs/lessons-learned.md).
 
 ## Target runtime
 
@@ -217,4 +217,4 @@ Milestone 4 implements the list, the score, and the SQLite rows. The script take
 
 - Whether a later launch under cloud, or a fire that flares by more than 20 K above its own recent median, still fits this rule. The frozen numbers are in [`docs/scoring.md`](docs/scoring.md). They come from one clear evening.
 - The second and third watch areas, after the same geolocation and pixel-size check used for Pad 1.
-- The license file, and the real Cafecito URL. The page links to `https://cafecito.app/` and labels that link as a placeholder.
+- The code license is MIT. The Cafecito page is `https://cafecito.app/ferno90`.

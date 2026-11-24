@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "monitorear"
+version = "0.1.0"
+description = "A small GOES-East ABI band-7 detector for large rocket launches"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Fernando Pereira", email = "fer.pereira9014@gmail.com" }]
+dependencies = [
+    "numpy>=1.26",
+    "xarray>=2024.1",
+    "netCDF4>=1.6",
+    "s3fs>=2024.1",
+    "matplotlib>=3.8",
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+]
+
+[project.optional-dependencies]
+notebooks = ["jupyter>=1.0", "ipykernel>=6.29"]
+
+[project.scripts]
+monitorear-flight11 = "monitorear.flight11:main"
+monitorear-signal = "monitorear.signal:main"
+monitorear-scoring = "monitorear.scoring:main"
+monitorear-poll = "monitorear.poll:main"
+monitorear-api = "monitorear.api:main"
+
+[tool.setuptools.packages.find]
+include = ["monitorear*"]
+
+[tool.setuptools.package-data]
+monitorear = ["map.html"]

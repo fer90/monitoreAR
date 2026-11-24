@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>monitoreAR</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font: 16px/1.45 "Iowan Old Style", Palatino, Georgia, serif;
+      color: #1c1917;
+      background: #fafaf9;
+    }
+    header, .panel { padding: 1rem 1.25rem; }
+    header { flex: 0 0 auto; border-bottom: 1px solid #e7e5e4; }
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 1.25rem 0 0.4rem; }
+    p { margin: 0.4rem 0; }
+    a { color: #9a3412; }
+    .layout { flex: 1; min-height: 0; display: flex; align-items: stretch; }
+    .panel { width: 28rem; max-width: 100%; overflow: auto; border-right: 1px solid #e7e5e4; }
+    .map-wrap { flex: 1; min-width: 0; min-height: 0; }
+    #map { height: 100%; width: 100%; background: #e7e5e4; }
+    ul { margin: 0.3rem 0 0.6rem; padding-left: 1.15rem; }
+    li { margin: 0.35rem 0; }
+    .card {
+      border: 1px solid #e7e5e4;
+      background: #fff;
+      padding: 0.75rem;
+      margin: 0.6rem 0;
+    }
+    .card h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+    .card img { width: 100%; height: auto; margin-top: 0.5rem; }
+    .cafecito img { max-width: 100%; height: auto; }
+    .meta { font-family: ui-monospace, monospace; font-size: 0.78rem; color: #44403c; word-break: break-all; }
+    .held { color: #57534e; }
+    @media (max-width: 800px) {
+      body { height: auto; overflow: auto; display: block; }
+      .layout { flex-direction: column; }
+      .panel { width: auto; border-right: 0; border-bottom: 1px solid #e7e5e4; }
+      .map-wrap, #map { height: 70vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>monitoreAR</h1>
+    <p>GOES-East ABI band 7 candidates for Starbase Pad 1. The points are hot pixels from the score stored in SQLite. The open marker is the pad.</p>
+  </header>
+  <div class="layout">
+    <section class="panel">
+      <h2>Limits of this view</h2>
+      <ul>
+        <li>At Pad 1 a band-7 pixel is about 2.3 km east–west and 2.5 km north–south. The temperature is the Planck temperature of the average radiance in that pixel.</li>
+        <li>The engines are hotter and smaller than the pixel. Flight 11 peaked near 346 K. The radiance ceiling on those files is about 411 K, and those pixels were not saturated.</li>
+        <li>When one mesoscale sector contains the pad, the revisit is about 60 seconds and the scan itself lasts about 7 seconds. If neither sector contains the pad, that minute is a coverage gap. CONUS and full-disk scans are left unscored.</li>
+        <li>The score is the hottest pixel within 20 km minus the median of that maximum on the previous covering scans. The threshold is 20 K, chosen from the Flight 11 case study.</li>
+        <li>The stored coordinate is the hot pixel on the ellipsoid. The second Flight 11 pixel is about 10 km from the pad. This page does not correct parallax and does not draw a trajectory.</li>
+        <li>Small launch vehicles are often invisible at this resolution.</li>
+        <li>The imagery is NOAA GOES-19 ABI Level 1b, from the public bucket. monitoreAR is not a NOAA service and not an operational alert.</li>
+        <li>Each crop uses one colour scale, 283.43 K to 350 K, the scale of the Flight 11 figure.</li>
+      </ul>
+      <p class="cafecito"><a href="https://cafecito.app/ferno90" rel="noopener" target="_blank"><img srcset="https://cdn.cafecito.app/imgs/buttons/button_6.png 1x, https://cdn.cafecito.app/imgs/buttons/button_6_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_6_3.75x.png 3.75x" src="https://cdn.cafecito.app/imgs/buttons/button_6.png" alt="Invitame un café en cafecito.app"></a></p>
+      <h2>Coverage</h2>
+      <p>The candidates are every emitted or held scan in the database. The line below is the newest stored scan, which can be a coverage gap from a later hour.</p>
+      <p id="coverage">Loading the latest stored scan.</p>
+      <h2>Candidates</h2>
+      <p class="meta">GET /detections?since=YYYY-MM-DD HH:MM:SS</p>
+      <div id="cards"></div>
+    </section>
+    <section class="map-wrap">
+      <div id="map"></div>
+    </section>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const cards = document.getElementById("cards");
+    const coverage = document.getElementById("coverage");
+
+    function line(parent, text, className) {
+      const p = document.createElement("p");
+      if (className) p.className = className;
+      p.textContent = text;
+      parent.appendChild(p);
+      return p;
+    }
+
+    function cropUrl(value) {
+      return /^\/crops\/OR_ABI-[A-Za-z0-9._-]+\.png$/.test(value) ? value : "";
+    }
+
+    function fireText(row) {
+      const parts = [];
+      (row.fire_hits_within_20km || []).forEach(function (hit) {
+        parts.push("Fire code " + hit.code + " (" + hit.meaning + "), " + hit.dist_km + " km, " + hit.frp_mw + " MW");
+      });
+      if (row.fire_nearest_mask == null) parts.push("Fire product unavailable for this scan.");
+      else parts.push("Nearest fire-mask code " + row.fire_nearest_mask + ".");
+      return parts.join(" ");
+    }
+
+    function addCard(row) {
+      const card = document.createElement("article");
+      card.className = "card";
+      const title = document.createElement("h3");
+      const label = row.status === "held_back" ? "held back" : "emitted";
+      title.textContent = row.scan_start + " UTC — " + label;
+      card.appendChild(title);
+      line(card, "Score " + row.score_k.toFixed(2) + " K. Neighbourhood maximum " + row.max_bt_k + " K, " + row.distance_km + " km from the pad.");
+      line(card, "Pad pixel " + row.near_bt_k + " K. Baseline " + row.baseline_k + " K over " + row.baseline_n + " scans. Solar zenith " + row.solar_zenith_deg + "°.");
+      line(card, fireText(row));
+      if (row.hold_reasons && row.hold_reasons.length) {
+        line(card, "Held because: " + row.hold_reasons.join(", "), "held");
+      }
+      const url = cropUrl(row.crop_url);
+      if (url) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "Band 7 brightness temperature at " + row.scan_start + " UTC";
+        card.appendChild(img);
+      }
+      line(card, row.source_key, "meta");
+      cards.appendChild(card);
+    }
+
+    function showMap(pad, rows) {
+      if (typeof L === "undefined") {
+        line(cards, "The map library did not load. The candidates above still come from the API.");
+        return;
+      }
+      const map = L.map("map", { zoomControl: true }).setView([pad.lat, pad.lon], 10);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
+      const bounds = [[pad.lat, pad.lon]];
+      L.circleMarker([pad.lat, pad.lon], {
+        radius: 8,
+        color: "#0e7490",
+        weight: 2,
+        fillOpacity: 0.15
+      }).addTo(map).bindPopup("Starbase Pad 1. Watch site. This marker is not a detection.");
+      rows.forEach(function (row) {
+        if (row.pixel_lat == null || row.pixel_lon == null) return;
+        bounds.push([row.pixel_lat, row.pixel_lon]);
+        const held = row.status === "held_back";
+        const marker = L.circleMarker([row.pixel_lat, row.pixel_lon], {
+          radius: 8,
+          color: held ? "#57534e" : "#c2410c",
+          fillColor: held ? "#a8a29e" : "#ea580c",
+          fillOpacity: 0.9
+        }).addTo(map);
+        const url = cropUrl(row.crop_url);
+        const holder = document.createElement("div");
+        line(holder, row.scan_start + " UTC");
+        line(holder, "Score " + row.score_k.toFixed(2) + " K, " + row.distance_km + " km from the pad.");
+        if (url) {
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = "";
+          img.width = 280;
+          holder.appendChild(img);
+        }
+        marker.bindPopup(holder);
+      });
+      function place() {
+        map.invalidateSize();
+        if (bounds.length > 1) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+        else map.setView([pad.lat, pad.lon], 10);
+      }
+      requestAnimationFrame(place);
+      setTimeout(place, 200);
+    }
+
+    Promise.all([
+      fetch("/coverage").then(function (response) { return response.json(); }),
+      fetch("/detections").then(function (response) { return response.json(); })
+    ]).then(function (pair) {
+      const status = pair[0];
+      const body = pair[1];
+      const latest = status.latest_scan;
+      coverage.textContent = latest
+        ? "Latest stored scan " + latest.scan_start + " UTC, sector " + latest.sector + ", " + (latest.gap_reason || latest.status) + ". Open gap rows: " + status.open_gaps.length + "."
+        : "No scan is stored yet.";
+      const rows = body.detections || [];
+      if (!rows.length) line(cards, "No candidate is stored.");
+      rows.forEach(addCard);
+      showMap(status.pad, rows);
+    }).catch(function (error) {
+      coverage.textContent = "The API did not load. " + error;
+    });
+  </script>
+</body>
+</html>

@@ -1,7 +1,0 @@
-numpy>=1.26
-xarray>=2024.1
-netCDF4>=1.6
-s3fs>=2024.1
-matplotlib>=3.8
-fastapi>=0.115
-uvicorn>=0.32

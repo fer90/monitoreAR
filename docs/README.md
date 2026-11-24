@@ -27,3 +27,5 @@ Every temperature and distance quoted here is printed by those scripts. Re-run t
 ```
 
 The last command listens on http://127.0.0.1:8000/ until interrupted.
+
+The package layout and the install command are in [Running it](running.md). The measurements that fixed the 20 K rule are collected in [Lessons from Flight 11](lessons-learned.md). The code is MIT; see [`LICENSE`](../LICENSE).

@@ -4,7 +4,9 @@ monitoreAR is a small, open-source detector for large rocket launches in public 
 
 The project is for learning the real limits of this data. A pixel is a few kilometres wide, a scan can miss a burn that lasts about a minute, clouds and sunlight get into the measurement, and a hot pixel is not a flame temperature. Those limits stay visible in the method and in the output. monitoreAR is not an operational launch service, and it is not trying to match commercial detectors.
 
-The software is free to use. The page carries a Cafecito link as a placeholder. The project page on Cafecito is not set up yet. There is no paid tier.
+The software is free to use. There is no paid tier.
+
+[![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_6.svg)](https://cafecito.app/ferno90)
 
 ## What v0.1 will do
 
@@ -44,7 +46,7 @@ Milestone 4 is the poller. `scripts/m4_poll.py` replays the Flight 11 hour into 
 
 Milestone 5 is the page. `scripts/m5_api.py` reads the SQLite rows and serves them at `http://127.0.0.1:8000/`. `GET /detections` is the candidates, including the score, the raw temperatures, and the source file. The map draws the hot pixel of each candidate and the pad. The thermal crop is a PNG in [`outputs/crops/`](outputs/crops/). On this database the two emitted points are still Flight 11, 39.29 K and 45.37 K, and the newest stored scan is a coverage gap: 23 November 2026, 22:40:54.9 UTC, sector M2, the sector missed the pad. The walkthrough is [`docs/api.md`](docs/api.md).
 
-Milestone 6 is not built yet: notebooks and packaging.
+Milestone 6 packages that code. The measurements live in the `monitorear` package (`goes_io`, `calibrate`, `geolocate`, `score`, `store`, `poll`, `api`). The scripts above are wrappers around the same entry points. Notebooks for the first three milestones are in [`notebooks/`](notebooks/) and run the offline checks without downloading the bucket again. How to install and run it is in [`docs/running.md`](docs/running.md). The measurements that fixed the rule are collected in [`docs/lessons-learned.md`](docs/lessons-learned.md).
 
 ## Reproduce the case study
 
@@ -52,7 +54,7 @@ From the repository root, with Python 3.12:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install -e .
 .venv/bin/python scripts/m1_starship_flight11.py
 .venv/bin/python scripts/m2_signal.py
 .venv/bin/python scripts/m3_score.py
@@ -101,19 +103,18 @@ Band 7 Level 1b files store radiance in mW m⁻² sr⁻¹ (cm⁻¹)⁻¹. Bright
 ## Layout today
 
 ```
-scripts/m1_starship_flight11.py   Flight 11 scene
-scripts/m2_signal.py              quiet evening and fire comparison
-scripts/m3_score.py               watch-site score and candidate log
-scripts/m4_poll.py                one-minute poller and the SQLite store
-scripts/m5_api.py                 JSON API and the map page
-scripts/m5_map.html               the page the API serves
+monitorear/                       package: geolocation, calibration, score, store, poll, API
+monitorear/map.html               the page the API serves
+scripts/                          wrappers for the five milestone commands
+notebooks/                        Milestone 1–3 narrative and the offline self-tests
 docs/                             equations and the walkthroughs
 outputs/                          figures, reports, crops, and the candidate log
-requirements.txt                  libraries used by those scripts
+pyproject.toml                    dependencies and the package metadata
+LICENSE                           MIT
 data/                             downloaded NetCDF, gitignored
 ARCHITECTURE.md                   decisions and the path to v0.1
 ```
 
 ## License
 
-The code is meant to be open source. A license file has not been added yet.
+The code is MIT. See [LICENSE](LICENSE). Copyright (c) 2026 Fernando Pereira. A copy keeps the copyright notice and the license text. The NOAA data are not covered by that license.
