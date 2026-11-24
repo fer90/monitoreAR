@@ -30,6 +30,8 @@ CROP_LON = (-97.85, -95.70)
 
 # GRS80 values used only by the offline geolocation self-test.
 # Real files carry their own semi-axes and perspective height.
+# _TEST_LON0 is the nominal subsatellite longitude. These files navigate
+# with longitude_of_projection_origin, which is -75.0°, not -75.2°.
 _TEST_R_EQ = 6378137.0
 _TEST_R_POL = 6356752.31414
 _TEST_H = 35786023.0
